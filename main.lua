@@ -9,48 +9,51 @@ local _ = require("gettext")
 local Screen = require("device").screen
 local logger = require("logger")
 
+
+--[=====[
+  #####  ####### ####### #     # ######  
+ #     # #          #    #     # #     # 
+ #       #          #    #     # #     # 
+  #####  #####      #    #     # ######  
+       # #          #    #     # #       
+ #     # #          #    #     # #       
+  #####  #######    #     #####  #       
+                                         
+]=====]
+
 local HiglightImport = Widget:extend{
     name = "Highlight Import"
 }
 
-function HiglightImport:reload()
-    logger.dbg("Trying to reload.")
+function HiglightImport:init()
+    -- self.ui.menu:registerToMainMenu(self)
+    -- self:printUI("Hello!")
 end
 
-function HiglightImport:printUI(msg)
+function HiglightImport:onReaderReady()
+    self.ui.menu:registerToMainMenu(self)
+end
+
+--[=====[
+ #     # ### 
+ #     #  #  
+ #     #  #  
+ #     #  #  
+ #     #  #  
+ #     #  #  
+  #####  ### 
+             
+]=====]
+
+function HiglightImport:alert(msg)
 
     local sample
     sample = InfoMessage:new{
         text = _(msg),
-        -- height = Screen:scaleBySize(400),
-        -- Set to false to hide the icon, and also the span between the icon and text.
         show_icon = false,
         timeout = 5,
     }
     UIManager:show(sample)
-end
-
-function HiglightImport:reloadDialog()
-    -- local button_dialog = ButtonDialog:new{
-    --     buttons = {
-            
-    --             text = "reload?",
-    --             callback = reload() end,
-    --             hold_callback = reload() end
-    --     }
-    -- }
-    -- UIManager:show(button_dialog)
-
-    -- local Button = require("ui/widget/button")
-    -- local button = Button:new{
-    --     text = _("Reload!"),
-    --     enabled = true, -- defaults to true
-    --     callback = reload,
-    --     width = Screen:scaleBySize(50),
-    --     bordersize = Screen:scaleBySize(3),
-    --     margin = 0,
-    --     padding = Screen:scaleBySize(2),
-    -- }
 end
 
 
@@ -59,10 +62,7 @@ function HiglightImport:ShowFileDialog()
 end
 
 
--- function HiglightImport:onReaderReady()
-    -- self.ui.menu:registerToMainMenu(self)
---     self.view:registerViewModule("higligh_import", self)
--- end
+
 
 function HiglightImport:addToMainMenu(menu_items)
     menu_items.higligh_import_plugin = {
@@ -93,10 +93,19 @@ function HiglightImport:addToMainMenu(menu_items)
     }
 end
 
-function HiglightImport:init()
-    self.ui.menu:registerToMainMenu(self)
-    self:printUI("Hello!")
+--[=====[
+ #     # ####### ### #       
+ #     #    #     #  #       
+ #     #    #     #  #       
+ #     #    #     #  #       
+ #     #    #     #  #       
+ #     #    #     #  #       
+  #####     #    ### ####### 
+                                                                         
+]=====]
+
+function HiglightImport:reload()
+    logger.dbg("Trying to reload.")
 end
 
--- reloadDialog()
 return HiglightImport
