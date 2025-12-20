@@ -1,12 +1,9 @@
-local Event = require("ui/event")
-local PluginShare = require("pluginshare")
-local UIManager = require("ui/uimanager")
 local Widget = require("ui/widget/widget")
-local WidgetContainer = require("ui/widget/container/widgetcontainer")
+local PathChooser = require("ui/widget/pathchooser")
 local InfoMessage = require("ui/widget/infomessage")
 local UIManager = require("ui/uimanager")
+
 local _ = require("gettext")
-local Screen = require("device").screen
 local logger = require("logger")
 
 
@@ -22,7 +19,9 @@ local logger = require("logger")
 ]=====]
 
 local HiglightImport = Widget:extend{
-    name = "Highlight Import"
+    name = "Highlight Import",
+    last_path = "",
+    file_path = ""
 }
 
 function HiglightImport:init()
@@ -62,6 +61,19 @@ function HiglightImport:ShowFileDialog()
 end
 
 
+function HiglightImport:chooseFile()
+    local path_chooser = PathChooser:new{
+        select_directory = false,
+        path = self.last_path,
+        onConfirm = function(file_path)
+            self.file_path = file_path
+            self.last_path = file_path:match("(.*)/")
+            if self.last_path == "" then self.last_path = "/" end
+        end
+    }
+    UIManager:show(path_chooser)
+end
+
 
 
 function HiglightImport:addToMainMenu(menu_items)
@@ -69,11 +81,25 @@ function HiglightImport:addToMainMenu(menu_items)
         text = _("Higlight Import"),
         sub_item_table ={
             {
-                text = _(">Import<"),
+                text = _("Select file"),
+                -- keep_menu_open = true,
                 callback = function()
+                    self:chooseFile()
+                end,
+            },
+            {
+                text_func = function()
+                    return self.last_path ~= "" and ">Import<" or "Import"
+                end,
+                callback = function()
+                    if(self.file_path == "") then
+                        self:chooseFile()
+                    end
+                    self:alert("Importing from: "..self.file_path)
                     return true
                 end,
             },
+            
             {
                 text = _("Settings"),
                 callback = function()
