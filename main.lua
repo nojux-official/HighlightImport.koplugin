@@ -79,6 +79,7 @@ end
 function HiglightImport:addToMainMenu(menu_items)
     menu_items.higligh_import_plugin = {
         text = _("Higlight Import"),
+        sorting_hint = "typeset", -- or tools
         sub_item_table ={
             {
                 text = _("Select file"),
