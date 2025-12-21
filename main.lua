@@ -2,6 +2,8 @@ local Widget = require("ui/widget/widget")
 local PathChooser = require("ui/widget/pathchooser")
 local InfoMessage = require("ui/widget/infomessage")
 local UIManager = require("ui/uimanager")
+local RapidJSON = require("rapidjson")
+local MyClipping = require("clip")
 
 local _ = require("gettext")
 local logger = require("logger")
@@ -25,12 +27,44 @@ local HiglightImport = Widget:extend{
 }
 
 function HiglightImport:init()
-    -- self.ui.menu:registerToMainMenu(self)
-    -- self:printUI("Hello!")
+    self.parser = MyClipping:new{ ui = self.ui }
 end
 
 function HiglightImport:onReaderReady()
     self.ui.menu:registerToMainMenu(self)
+end
+
+
+function HiglightImport:isDocReady()
+    return self.document and self.ui.annotation:hasAnnotations() and true or false
+end
+
+function HiglightImport:onExportCurrentNotes()
+    if not self:isDocReady() then return end
+    self.ui.annotation:updatePageNumbers(true)
+    local clippings = self.parser:parseCurrentDoc()
+    self:exportClippings(clippings)
+end
+
+function HiglightImport:exportClippings(clippings)
+    if type(clippings) ~= "table" then return end
+    local exportables = {}
+    for _title, booknotes in pairs(clippings) do
+        table.insert(exportables, booknotes)
+    end
+    if #exportables == 0 then
+        UIManager:show(InfoMessage:new{ text = _("No highlights to export") })
+        return
+    end
+    local timestamp = os.time()
+    for i, clipping in ipairs(exportables) do
+        logger.dbg("Clipping " .. i .. ": " .. tostring(clipping))
+    end
+
+    local serialized = RapidJSON.encode(exportables, { indent = true })
+
+    self:alert(serialized)
+
 end
 
 --[=====[
@@ -100,7 +134,13 @@ function HiglightImport:addToMainMenu(menu_items)
                     return true
                 end,
             },
-            
+            {
+                text =  _("List highlights"),
+                callback = function()
+                    self:onExportCurrentNotes()
+                    return true
+                end,
+            },
             {
                 text = _("Settings"),
                 callback = function()
