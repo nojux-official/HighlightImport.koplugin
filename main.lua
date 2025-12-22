@@ -90,10 +90,6 @@ function HiglightImport:alert(msg)
 end
 
 
-function HiglightImport:ShowFileDialog()
-
-end
-
 
 function HiglightImport:chooseFile()
     local path_chooser = PathChooser:new{
@@ -124,7 +120,7 @@ function HiglightImport:addToMainMenu(menu_items)
             },
             {
                 text_func = function()
-                    return self.last_path ~= "" and ">Import<" or "Import"
+                    return self.file_path ~= "" and ">Import<" or "Import"
                 end,
                 callback = function()
                     if(self.file_path == "") then
@@ -135,12 +131,24 @@ function HiglightImport:addToMainMenu(menu_items)
                 end,
             },
             {
-                text =  _("List highlights"),
+                text =  _("List doc highlights"),
                 callback = function()
                     self:onExportCurrentNotes()
                     return true
                 end,
             },
+            {
+                text =  _("Parse highlights (file)"),
+                callback = function()
+                    if(self.file_path == "") then
+                        self:chooseFile()
+                    end
+                    local clippings = self.parser:parseFile(self.file_path)
+                    self:exportClippings(clippings)
+                    return true
+                end,
+            },
+
             {
                 text = _("Settings"),
                 callback = function()

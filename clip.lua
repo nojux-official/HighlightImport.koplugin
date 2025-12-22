@@ -33,14 +33,14 @@ end
 --      }
 -- }
 
-function MyClipping:parseMyClippings()
+function MyClipping:parseFile(file_path)
     -- My Clippings format:
     -- Title(Author Name)
     -- Your Highlight on Page 123 | Added on Monday, April 21, 2014 10:08:07 PM
     --
     -- This is a sample highlight.
     -- ==========
-    local file = io.open("/mnt/us/documents/My Clippings.txt", "r")
+    local file = io.open(file_path, "r")
     local clippings = {}
     if file then
         local index = 1
