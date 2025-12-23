@@ -112,7 +112,7 @@ function HiglightImport:addToMainMenu(menu_items)
         sorting_hint = "typeset", -- or tools
         sub_item_table ={
             {
-                text = _("Select file"),
+                text = _("1. Select file"),
                 -- keep_menu_open = true,
                 callback = function()
                     self:chooseFile()
@@ -131,14 +131,14 @@ function HiglightImport:addToMainMenu(menu_items)
                 end,
             },
             {
-                text =  _("List doc highlights"),
+                text =  _("2. List doc highlights"),
                 callback = function()
                     self:onExportCurrentNotes()
                     return true
                 end,
             },
             {
-                text =  _("Parse highlights (file)"),
+                text =  _("3. Parse highlights (file)"),
                 callback = function()
                     if(self.file_path == "") then
                         self:chooseFile()
@@ -148,7 +148,29 @@ function HiglightImport:addToMainMenu(menu_items)
                     return true
                 end,
             },
+            {
+                text =  _("4. Create Highlight"),
+                callback = function()
+                    -- user selected text
+                    -- using builtin search and retrieving indexes
+                    -- retrieving text on screen and selecting it
+                    -- using random indexes
+                    return true
+                end,
+            },
+            {
+                text =  _("5. Comparison"),
+                callback = function()
+                    -- highlights on document (no need to show)
+                    -- highlights on clippings but not on document (to be imported)
+                    -- highlights on clippings (but cannot be mapped to document)
+                    -- imported highlights (they intersect between documents and the clippings)
+                    -- scanning progress
+                    -- stats, diagram, etc.
 
+                    return true
+                end,
+            },
             {
                 text = _("Settings"),
                 callback = function()
