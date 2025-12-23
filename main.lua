@@ -166,6 +166,12 @@ function HighlightImport:addToMainMenu(menu_items)
                     -- using builtin search and retrieving indexes
                     -- retrieving text on screen and selecting it
                     -- using random indexes
+
+                    local xpointer = "/body/DocFragment[14]/body/div[1]/p[56]/span[1]/text().0"
+                    local xpointer2 = "/body/DocFragment[14]/body/div[1]/p[57]/span[1]/text().0"
+                    local xpointerText = self.document:getTextFromXPointer(xpointer)
+
+                    self:createHighlightFromXPointer(xpointer, xpointer2, xpointerText)
                     return true
                 end,
             },
@@ -230,6 +236,22 @@ function HighlightImport:getLastProgress()
     else
         return self.ui.rolling:getLastProgress()
     end
+end
+
+function HighlightImport:createHighlightFromXPointer(start_xp, end_xp, text)
+    self.ui.highlight.selected_text = {
+        text = text,
+        pos0 = start_xp,
+        pos1 = end_xp,
+        -- For rolling (EPUB/etc)
+        -- sboxes = self.document:getScreenBoxesFromPositions(start_xp, end_xp)
+    }
+    
+    local index = self.ui.highlight:saveHighlight(true)
+    
+    self.ui.highlight:clear()
+    
+    return index
 end
 
 return HighlightImport
