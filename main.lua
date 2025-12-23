@@ -168,8 +168,8 @@ function HighlightImport:addToMainMenu(menu_items)
                     -- using random indexes
 
                     local xpointer = "/body/DocFragment[14]/body/div[1]/p[56]/span[1]/text().0"
-                    local xpointer2 = "/body/DocFragment[14]/body/div[1]/p[57]/span[1]/text().0"
-                    local xpointerText = self.document:getTextFromXPointer(xpointer)
+                    local xpointer2 = "/body/DocFragment[14]/body/div[1]/p[56]/span[1]/text().12"
+                    local xpointerText = self.document:getTextFromXPointers(xpointer, xpointer2)
 
                     self:createHighlightFromXPointer(xpointer, xpointer2, xpointerText)
                     return true
