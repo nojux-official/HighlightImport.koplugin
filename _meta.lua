@@ -1,6 +1,6 @@
 local _ = require("gettext")
 return {
-    name = "higlight_import",
-    fullname = _("higlight_import"),
+    name = "Highlight_import",
+    fullname = _("Highlight_import"),
     description = _([[This plugin generates a QR code from clipboard content.]]),
 }

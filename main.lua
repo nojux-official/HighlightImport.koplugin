@@ -4,6 +4,7 @@ local InfoMessage = require("ui/widget/infomessage")
 local UIManager = require("ui/uimanager")
 local RapidJSON = require("rapidjson")
 local MyClipping = require("clip")
+local Math = require("optmath")
 
 local _ = require("gettext")
 local logger = require("logger")
@@ -20,33 +21,31 @@ local logger = require("logger")
                                          
 ]=====]
 
-local HiglightImport = Widget:extend{
+local HighlightImport = Widget:extend{
     name = "Highlight Import",
     last_path = "",
     file_path = ""
 }
 
-function HiglightImport:init()
+function HighlightImport:init()
     self.parser = MyClipping:new{ ui = self.ui }
 end
 
-function HiglightImport:onReaderReady()
-    self.ui.menu:registerToMainMenu(self)
-end
 
 
-function HiglightImport:isDocReady()
+
+function HighlightImport:isDocReady()
     return self.document and self.ui.annotation:hasAnnotations() and true or false
 end
 
-function HiglightImport:onExportCurrentNotes()
+function HighlightImport:onExportCurrentNotes()
     if not self:isDocReady() then return end
     self.ui.annotation:updatePageNumbers(true)
     local clippings = self.parser:parseCurrentDoc()
     self:exportClippings(clippings)
 end
 
-function HiglightImport:exportClippings(clippings)
+function HighlightImport:exportClippings(clippings)
     if type(clippings) ~= "table" then return end
     local exportables = {}
     for _title, booknotes in pairs(clippings) do
@@ -78,7 +77,7 @@ end
              
 ]=====]
 
-function HiglightImport:alert(msg)
+function HighlightImport:alert(msg)
 
     local sample
     sample = InfoMessage:new{
@@ -91,7 +90,7 @@ end
 
 
 
-function HiglightImport:chooseFile()
+function HighlightImport:chooseFile()
     local path_chooser = PathChooser:new{
         select_directory = false,
         path = self.last_path,
@@ -106,9 +105,9 @@ end
 
 
 
-function HiglightImport:addToMainMenu(menu_items)
+function HighlightImport:addToMainMenu(menu_items)
     menu_items.higligh_import_plugin = {
-        text = _("Higlight Import"),
+        text = _("Highlight Import"),
         sorting_hint = "typeset", -- or tools
         sub_item_table ={
             {
@@ -201,8 +200,24 @@ end
                                                                          
 ]=====]
 
-function HiglightImport:reload()
+function HighlightImport:reload()
     logger.dbg("Trying to reload.")
 end
 
-return HiglightImport
+function HighlightImport:getLastPercent()
+    if self.ui.document.info.has_pages then
+        return Math.roundPercent(self.ui.paging:getLastPercent())
+    else
+        return Math.roundPercent(self.ui.rolling:getLastPercent())
+    end
+end
+
+function HighlightImport:getLastProgress()
+    if self.ui.document.info.has_pages then
+        return self.ui.paging:getLastProgress()
+    else
+        return self.ui.rolling:getLastProgress()
+    end
+end
+
+return HighlightImport
