@@ -31,7 +31,19 @@ function HighlightImport:init()
     self.parser = MyClipping:new{ ui = self.ui }
 end
 
+function HighlightImport:onReaderReady()
 
+    local lastPercent = self:getLastPercent()
+    local lastProgress = self:getLastProgress()
+    local xpointer = "/body/DocFragment[14]/body/div[1]/p[56]/span[1]/text().0"
+    local xpointerText = self.document:getTextFromXPointer(xpointer)
+    logger.dbg("HighlightImport: Last percent: " .. lastPercent)
+    logger.dbg("HighlightImport: Last progress: " .. lastProgress)
+    logger.dbg("HighlightImport: Xpointer text: " .. xpointerText)
+    
+    self.ui.menu:registerToMainMenu(self)
+    
+end
 
 
 function HighlightImport:isDocReady()
