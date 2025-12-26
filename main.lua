@@ -48,7 +48,7 @@ end
 
 
 function HighlightImport:isDocReady()
-    return self.document and self.ui.annotation:hasAnnotations() and true or false
+    return self.document and true or false
 end
 
 function HighlightImport:loadNativeHighlights()
@@ -268,6 +268,9 @@ function HighlightImport:import(file_path)
         highlight 
     }
     --]=====]
+
+
+    if not self:isDocReady() then return end
     
     local clippings = self.parser:parseFile(file_path)
 
@@ -290,9 +293,20 @@ function HighlightImport:import(file_path)
             end
 
             local query = entry[1].text
-            logger.dbg("Processing " .. query)
-            -- local res = self.ui.search:findAllText(query)
+            logger.dbg("HighlightImport: Processing " .. query)
+            -- pattern, origin, direction, case_insensitive, page, regex, max_hits
+            local res = self.document:findText(query, -1, 0, true, 1, false, 1)
+            if not res or #res == 0 then
+                logger.dbg("HighlightImport: Failed to find text: " .. query)
+                failures = failures + 1
+                goto continueInner
+            end
+            local xpointer_start = res[1].start
+            local xpointer_end = res[1]["end"]
+            logger.dbg("HighlightImport: Found text at: " .. xpointer_start .. " to " .. xpointer_end)
             
+            self:createHighlightFromXPointer(xpointer_start, xpointer_end, query)
+  
             successes = successes + 1
             ::continueInner::
         end
@@ -300,7 +314,7 @@ function HighlightImport:import(file_path)
         ::continueOuter::
     end
 
-    logger.dbg("successes: " .. successes .. ", failures: " .. failures)
+    logger.dbg("HighlightImport: successes: " .. successes .. ", failures: " .. failures)
 
 
 
