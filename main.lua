@@ -8,6 +8,7 @@ local Math = require("optmath")
 
 local _ = require("gettext")
 local logger = require("logger")
+-- require("import")
 
 
 --[=====[
@@ -23,8 +24,8 @@ local logger = require("logger")
 
 local HighlightImport = Widget:extend{
     name = "Highlight Import",
-    last_path = "",
-    file_path = ""
+    last_path = "/home/nojus/Desktop/JP_test/",
+    file_path = "/home/nojus/Desktop/JP_test/My Clippings.txt"
 }
 
 function HighlightImport:init()
@@ -50,14 +51,14 @@ function HighlightImport:isDocReady()
     return self.document and self.ui.annotation:hasAnnotations() and true or false
 end
 
-function HighlightImport:onExportCurrentNotes()
+function HighlightImport:loadNativeHighlights()
     if not self:isDocReady() then return end
     self.ui.annotation:updatePageNumbers(true)
     local clippings = self.parser:parseCurrentDoc()
-    self:exportClippings(clippings)
+    self:serializeClippings(clippings)
 end
 
-function HighlightImport:exportClippings(clippings)
+function HighlightImport:serializeClippings(clippings)
     if type(clippings) ~= "table" then return end
     local exportables = {}
     for _title, booknotes in pairs(clippings) do
@@ -72,10 +73,7 @@ function HighlightImport:exportClippings(clippings)
         logger.dbg("Clipping " .. i .. ": " .. tostring(clipping))
     end
 
-    local serialized = RapidJSON.encode(exportables, { indent = true })
-
-    self:alert(serialized)
-
+    return RapidJSON.encode(exportables, { indent = true })
 end
 
 --[=====[
@@ -138,13 +136,16 @@ function HighlightImport:addToMainMenu(menu_items)
                         self:chooseFile()
                     end
                     self:alert("Importing from: "..self.file_path)
+
+                    local importables = self:import(self.file_path)
+                    self:alert(importables)
                     return true
                 end,
             },
             {
                 text =  _("2. List doc highlights"),
                 callback = function()
-                    self:onExportCurrentNotes()
+                    self:loadNativeHighlights()
                     return true
                 end,
             },
@@ -155,7 +156,9 @@ function HighlightImport:addToMainMenu(menu_items)
                         self:chooseFile()
                     end
                     local clippings = self.parser:parseFile(self.file_path)
-                    self:exportClippings(clippings)
+                    local serialized = self:serializeClippings(clippings)
+                    self:alert(serialized)
+
                     return true
                 end,
             },
@@ -253,5 +256,40 @@ function HighlightImport:createHighlightFromXPointer(start_xp, end_xp, text)
     
     return index
 end
+
+function HighlightImport:import(file_path)
+
+    --[=====[
+    load my_clippings
+
+    loop foreach through my_clippings {
+        search for entry
+        obtain xpath start-end indexes
+        highlight 
+    }
+    --]=====]
+    
+    local clippings = self.parser:parseFile(file_path)
+
+    -- return self:serializeClippings(clippings)
+    if type(clippings) ~= "table" then return end
+        local queue = {}
+        for _title, booknotes in pairs(clippings) do
+            table.insert(queue, booknotes)
+    end
+    if #queue == 0 then
+        return
+    end
+    local timestamp = os.time()
+    for i, clipping in ipairs(queue) do
+        logger.dbg("Clipping " .. i .. ": " .. tostring(clipping))
+    end
+
+    local serialized = RapidJSON.encode(queue, { indent = true })
+
+    return serialized
+
+end
+
 
 return HighlightImport
