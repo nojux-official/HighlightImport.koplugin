@@ -273,21 +273,36 @@ function HighlightImport:import(file_path)
 
     -- return self:serializeClippings(clippings)
     if type(clippings) ~= "table" then return end
-        local queue = {}
-        for _title, booknotes in pairs(clippings) do
-            table.insert(queue, booknotes)
-    end
-    if #queue == 0 then
-        return
-    end
-    local timestamp = os.time()
-    for i, clipping in ipairs(queue) do
-        logger.dbg("Clipping " .. i .. ": " .. tostring(clipping))
+    
+    local failures = 0
+    local successes = 0
+    for _title, booknotes in pairs(clippings) do
+        if type(booknotes) ~= "table" or #booknotes == 0 then
+            goto continueOuter
+        end
+
+        for _, entry in ipairs(booknotes) do
+            local serialized = RapidJSON.encode(entry, { indent = true })
+            logger.dbg("Entry: " .. tostring(serialized))
+            if entry[1].sort ~= "highlight" then 
+                failures = failures + 1
+                goto continueInner
+            end
+
+            local query = entry[1].text
+            logger.dbg("Processing " .. query)
+            -- local res = self.ui.search:findAllText(query)
+            
+            successes = successes + 1
+            ::continueInner::
+        end
+        
+        ::continueOuter::
     end
 
-    local serialized = RapidJSON.encode(queue, { indent = true })
+    logger.dbg("successes: " .. successes .. ", failures: " .. failures)
 
-    return serialized
+
 
 end
 
