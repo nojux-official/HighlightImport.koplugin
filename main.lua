@@ -24,8 +24,8 @@ local logger = require("logger")
 
 local HighlightImport = Widget:extend{
     name = "Highlight Import",
-    last_path = "/home/nojus/Desktop/JP_test/",
-    file_path = "/home/nojus/Desktop/JP_test/My Clippings.txt"
+    last_path = "",
+    file_path = ""
 }
 
 function HighlightImport:init()
@@ -33,17 +33,7 @@ function HighlightImport:init()
 end
 
 function HighlightImport:onReaderReady()
-
-    local lastPercent = self:getLastPercent()
-    local lastProgress = self:getLastProgress()
-    local xpointer = "/body/DocFragment[14]/body/div[1]/p[56]/span[1]/text().0"
-    local xpointerText = self.document:getTextFromXPointer(xpointer)
-    logger.dbg("HighlightImport: Last percent: " .. lastPercent)
-    logger.dbg("HighlightImport: Last progress: " .. lastProgress)
-    logger.dbg("HighlightImport: Xpointer text: " .. xpointerText)
-    
     self.ui.menu:registerToMainMenu(self)
-    
 end
 
 
@@ -121,7 +111,7 @@ function HighlightImport:addToMainMenu(menu_items)
         sorting_hint = "typeset", -- or tools
         sub_item_table ={
             {
-                text = _("1. Select file"),
+                text = _("Select file"),
                 -- keep_menu_open = true,
                 callback = function()
                     self:chooseFile()
@@ -137,49 +127,12 @@ function HighlightImport:addToMainMenu(menu_items)
                     end
                     self:alert("Importing from: "..self.file_path)
 
-                    local importables = self:import(self.file_path)
-                    self:alert(importables)
+                    self:import(self.file_path)
                     return true
                 end,
             },
             {
-                text =  _("2. List doc highlights"),
-                callback = function()
-                    self:loadNativeHighlights()
-                    return true
-                end,
-            },
-            {
-                text =  _("3. Parse highlights (file)"),
-                callback = function()
-                    if(self.file_path == "") then
-                        self:chooseFile()
-                    end
-                    local clippings = self.parser:parseFile(self.file_path)
-                    local serialized = self:serializeClippings(clippings)
-                    self:alert(serialized)
-
-                    return true
-                end,
-            },
-            {
-                text =  _("4. Create Highlight"),
-                callback = function()
-                    -- user selected text
-                    -- using builtin search and retrieving indexes
-                    -- retrieving text on screen and selecting it
-                    -- using random indexes
-
-                    local xpointer = "/body/DocFragment[14]/body/div[1]/p[56]/span[1]/text().0"
-                    local xpointer2 = "/body/DocFragment[14]/body/div[1]/p[56]/span[1]/text().12"
-                    local xpointerText = self.document:getTextFromXPointers(xpointer, xpointer2)
-
-                    self:createHighlightFromXPointer(xpointer, xpointer2, xpointerText)
-                    return true
-                end,
-            },
-            {
-                text =  _("5. Comparison"),
+                text =  _("Status"),
                 callback = function()
                     -- highlights on document (no need to show)
                     -- highlights on clippings but not on document (to be imported)
