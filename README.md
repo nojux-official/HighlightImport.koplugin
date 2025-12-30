@@ -156,15 +156,16 @@ Contributions are welcome! Please feel free to submit issues or pull requests.
 
 ## License
 
-[Add your license here]
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Credits
 
-Developed by nojux-official.
+**Author**: [nojux-official](https://github.com/nojux-official)
 
-Based on KOReader's plugin architecture and inspired by the community's need for Kindle highlight import functionality.
-
-clip.lua parser adapted from https://github.com/koreader/koreader/commits/master/plugins/exporter.koplugin/clip.lua
+**Acknowledgments**:
+- Built on [KOReader](https://github.com/koreader/koreader)'s plugin architecture
+- `clip.lua` parser adapted from KOReader's [exporter.koplugin](https://github.com/koreader/koreader/tree/master/plugins/exporter.koplugin)
+- Inspired by the KOReader community's need for Kindle highlight import functionality
 
 
 
