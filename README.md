@@ -7,7 +7,6 @@ Import your Kindle highlights from "My Clippings.txt" directly into KOReader.
 - Import highlights from Kindle's "My Clippings.txt" file
 - Automatic text matching and highlight creation
 - Support for multi-line highlights
-- Preserves highlight metadata (location, timestamp)
 
 ## Tested Platforms
 
