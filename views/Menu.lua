@@ -1,26 +1,28 @@
-function HighlightImport:addToMainMenu(menu_items)
-    menu_items.higligh_import_plugin = {
+local _ = require("gettext")
+
+return function (instance)
+    return {
         text = _("Highlight Import"),
         sorting_hint = "typeset", -- or tools
-        sub_item_table ={
+        sub_item_table = {
             {
                 text = _("Select file"),
                 -- keep_menu_open = true,
                 callback = function()
-                    self:chooseFile()
+                    instance:chooseFile()
                 end,
             },
             {
                 text_func = function()
-                    return self.file_path ~= "" and ">Import<" or "Import"
+                    return instance.file_path ~= "" and ">Import<" or "Import"
                 end,
                 callback = function()
-                    if(self.file_path == "") then
-                        self:chooseFile()
+                    if(instance.file_path == "") then
+                        instance:chooseFile()
                     end
-                    self:alert("Importing from: "..self.file_path)
+                    instance:alert("Importing from: "..instance.file_path)
 
-                    self:import(self.file_path)
+                    instance:import(instance.file_path)
                     return true
                 end,
             },

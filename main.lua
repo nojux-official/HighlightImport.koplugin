@@ -1,30 +1,28 @@
 local Widget = require("ui/widget/widget")
-local PathChooser = require("ui/widget/pathchooser")
-local InfoMessage = require("ui/widget/infomessage")
-local UIManager = require("ui/uimanager")
-local RapidJSON = require("rapidjson")
-local MyClipping = require("clip")
-local Math = require("optmath")
-
 local _ = require("gettext")
 local logger = require("logger")
+
+local getMenu = require("views/Menu")
 
 
 local HighlightImport = Widget:extend{
     name = "Highlight Import",
-    last_path = "",
     file_path = ""
+    
 }
 
 function HighlightImport:init()
-    self.parser = MyClipping:new{ ui = self.ui }
+
 end
 
 function HighlightImport:onReaderReady()
+
     self.ui.menu:registerToMainMenu(self)
 end
 
-
+function HighlightImport:addToMainMenu(menu_items)
+    menu_items.highlight_import_plugin = getMenu(self)
+end
 
 
 
