@@ -1,5 +1,9 @@
 local _ = require("gettext")
 
+local getAISettings = require("views/settings/SettingsAI")
+-- local getRunnerSettings = require("views/settings/SettingsRunner")
+-- local getSyncSettings = require("views/settings/SettingsSync")
+
 function getSettings(instance)
     return {
         {
@@ -18,6 +22,7 @@ function getSettings(instance)
         },
         {
             text = _("AI assisted matching: Disabled"),
+            sub_item_table = getAISettings(instance),
             callback = function()
                 alert("Not implemented yet.")
                 return true
