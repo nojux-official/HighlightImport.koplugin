@@ -390,4 +390,22 @@ function MyClipping:parseCurrentDoc()
     return clippings
 end
 
+function MyClipping:serializeClippings(clippings)
+    if type(clippings) ~= "table" then return end
+    local exportables = {}
+    for _title, booknotes in pairs(clippings) do
+        table.insert(exportables, booknotes)
+    end
+    if #exportables == 0 then
+        UIManager:show(InfoMessage:new{ text = _("No highlights to export") })
+        return
+    end
+    local timestamp = os.time()
+    for i, clipping in ipairs(exportables) do
+        logger.dbg("Clipping " .. i .. ": " .. tostring(clipping))
+    end
+
+    return RapidJSON.encode(exportables, { indent = true })
+end
+
 return MyClipping
