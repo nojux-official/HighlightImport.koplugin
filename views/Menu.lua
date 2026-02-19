@@ -3,11 +3,11 @@ local _ = require("gettext")
 
 local getSettings = require("views/settings/Settings")
 local fileSelector = require("components/fileSelector")
-local alert = require("components/alert")
-local popup = require("components/popup")
+local Alert = require("components/Alert")
+local Popup = require("components/Popup")
 
 
-function getMenu(instance)
+function GetMenu(instance)
     return
     {
         {
@@ -23,10 +23,10 @@ function getMenu(instance)
             end,
             callback = function()
                 if(instance.file_path == "") then
-                    alert("Select the source file first.")
+                    Alert("Select the source file first.")
                     return true
                 else
-                    alert("Importing from: "..instance.file_path)
+                    Alert("Importing from: "..instance.file_path)
                     -- instance:import(instance.file_path)
                 end
                 return true
@@ -41,7 +41,7 @@ function getMenu(instance)
                 -- imported highlights (they intersect between documents and the clippings)
                 -- scanning progress
                 -- stats, diagram, etc.
-                popup("Import status", [[
+                Popup("Import status", [[
 Importing from /ff/dsd/.../book.txt
 Status: in progress
 Suceeded: 100
@@ -58,14 +58,14 @@ Elapsed time: 20 s
         {
             text = _("Browse file highlights"),
             callback = function()
-                alert("Not implemented yet.")
+                Alert("Not implemented yet.")
                 return true
             end,
         },
         {
             text = _("Failed matches"),
             callback = function()
-                alert("Not implemented yet.")
+                Alert("Not implemented yet.")
                 return true
             end,
         },
@@ -78,10 +78,10 @@ Elapsed time: 20 s
             text = _("About"),
             keep_menu_open = true,
             callback = function()
-                alert("A plugin to import your highlights from various formats. Check the plugin Github repo for more info.")
+                Alert("A plugin to import your highlights from various formats. Check the plugin Github repo for more info.")
             end,
         },
     }
 end
 
-return getMenu
+return GetMenu

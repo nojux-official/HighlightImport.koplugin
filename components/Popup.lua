@@ -11,7 +11,7 @@ local Screen = Device.screen
 local useImportStatusButtons = require("composables/useImportStatusButtons")
 
 
-function popup(title, content)
+function Popup(title, content)
     
     local content = VerticalGroup:new{  
         TextBoxWidget:new{  
@@ -32,4 +32,4 @@ function popup(title, content)
 
 end
 
-return popup
+return Popup

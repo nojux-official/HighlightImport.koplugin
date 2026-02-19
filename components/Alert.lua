@@ -2,7 +2,7 @@ local InfoMessage = require("ui/widget/infomessage")
 local UIManager = require("ui/uimanager")
 local _ = require("gettext")
 
-function alert(msg)
+function Alert(msg)
 
     local sample
     sample = InfoMessage:new{
@@ -13,4 +13,4 @@ function alert(msg)
     UIManager:show(sample)
 end
 
-return alert
+return Alert
