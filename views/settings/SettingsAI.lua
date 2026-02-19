@@ -3,7 +3,7 @@ local _ = require("gettext")
 function getAISettings(instance)
     return {
         {
-            text = _("Enabled: Yes"),
+            text = _("Enabled: No"),
             callback = function()
                 alert("Not implemented yet.")
                 return true
