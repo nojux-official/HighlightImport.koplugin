@@ -21,7 +21,12 @@ function HighlightImport:onReaderReady()
 end
 
 function HighlightImport:addToMainMenu(menu_items)
-    menu_items.highlight_import_plugin = getMenu(self)
+    menu_items.highlight_import_plugin = 
+    {
+        text = _("Highlight Import"),
+        sorting_hint = "typeset", -- or tools
+        sub_item_table = getMenu(self)
+    }
 end
 
 
