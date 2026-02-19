@@ -1,7 +1,8 @@
 local InfoMessage = require("ui/widget/infomessage")
 local UIManager = require("ui/uimanager")
+local _ = require("gettext")
 
-function HighlightImport:alert(msg)
+function alert(msg)
 
     local sample
     sample = InfoMessage:new{
@@ -11,3 +12,5 @@ function HighlightImport:alert(msg)
     }
     UIManager:show(sample)
 end
+
+return alert

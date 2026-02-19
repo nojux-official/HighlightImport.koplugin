@@ -1,6 +1,12 @@
+local UIManager = require("ui/uimanager")
+local InfoMessage = require("ui/widget/infomessage")
 local _ = require("gettext")
 
-return function (instance)
+
+local fileSelector = require("components/fileSelector")
+local alert = require("components/alert")
+
+function getMenu(instance)
     return {
         text = _("Highlight Import"),
         sorting_hint = "typeset", -- or tools
@@ -9,7 +15,7 @@ return function (instance)
                 text = _("Select file"),
                 -- keep_menu_open = true,
                 callback = function()
-                    instance:chooseFile()
+                    fileSelector(instance)
                 end,
             },
             {
@@ -18,11 +24,12 @@ return function (instance)
                 end,
                 callback = function()
                     if(instance.file_path == "") then
-                        instance:chooseFile()
+                        alert("Select the source file first.")
+                        return true
+                    else
+                        alert("Importing from: "..instance.file_path)
+                        -- instance:import(instance.file_path)
                     end
-                    instance:alert("Importing from: "..instance.file_path)
-
-                    instance:import(instance.file_path)
                     return true
                 end,
             },
@@ -35,13 +42,28 @@ return function (instance)
                     -- imported highlights (they intersect between documents and the clippings)
                     -- scanning progress
                     -- stats, diagram, etc.
-
+                    alert("Not implemented yet.")
+                    return true
+                end,
+            },
+            {
+                text = _("Browse file highlights"),
+                callback = function()
+                    alert("Not implemented yet.")
+                    return true
+                end,
+            },
+            {
+                text = _("Failed matches"),
+                callback = function()
+                    alert("Not implemented yet.")
                     return true
                 end,
             },
             {
                 text = _("Settings"),
                 callback = function()
+                    alert("Not implemented yet.")
                     return true
                 end,
             },
@@ -49,11 +71,11 @@ return function (instance)
                 text = _("About"),
                 keep_menu_open = true,
                 callback = function()
-                    UIManager:show(InfoMessage:new{
-                        text = _("A plugin to import your highlights from various formats. Check the plugin Github repo for more info."),
-                    })
+                    alert("A plugin to import your highlights from various formats. Check the plugin Github repo for more info.")
                 end,
             },
         },
     }
 end
+
+return getMenu
