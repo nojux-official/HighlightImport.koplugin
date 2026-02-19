@@ -50,7 +50,9 @@ Elapsed time: 20 s
         },
         {
             text = _("Browse file highlights"),
-            callback = AnnotationsView
+            callback = function()
+                AnnotationsView(instance)
+            end
         },
         {
             text = _("Failed matches"),
