@@ -4,6 +4,7 @@ local _ = require("gettext")
 local getSettings = require("views/settings/Settings")
 local fileSelector = require("components/fileSelector")
 local alert = require("components/alert")
+local popup = require("components/popup")
 
 
 function getMenu(instance)
@@ -40,7 +41,17 @@ function getMenu(instance)
                 -- imported highlights (they intersect between documents and the clippings)
                 -- scanning progress
                 -- stats, diagram, etc.
-                alert("Not implemented yet.")
+                popup("Import status", [[
+Importing from /ff/dsd/.../book.txt
+Status: in progress
+Suceeded: 100
+Skipped: 15
+Failed: 2
+Remaining: 50
+Elapsed time: 20 s
+
+]])
+                -- alert("Not implemented yet.")
                 return true
             end,
         },
