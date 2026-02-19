@@ -1,10 +1,12 @@
 local _ = require("gettext")
 
-
-local getSettings = require("views/settings/Settings")
-local fileSelector = require("components/fileSelector")
-local Alert = require("components/Alert")
-local Popup = require("components/Popup")
+local ImportsView = require("views.Imports")
+local AnnotationsView = require("views.annotations.Annotations")
+local FailedTargetsView = require("views.FailedTargets")
+local getSettings = require("views.settings.Settings")
+local fileSelector = require("components.fileSelector")
+local Alert = require("components.Alert")
+local Popup = require("components.Popup")
 
 
 function GetMenu(instance)
@@ -21,16 +23,7 @@ function GetMenu(instance)
             text_func = function()
                 return instance.file_path ~= "" and ">Import<" or "Import"
             end,
-            callback = function()
-                if(instance.file_path == "") then
-                    Alert("Select the source file first.")
-                    return true
-                else
-                    Alert("Importing from: "..instance.file_path)
-                    -- instance:import(instance.file_path)
-                end
-                return true
-            end,
+            callback = ImportsView
         },
         {
             text =  _("Status"),
@@ -57,17 +50,11 @@ Elapsed time: 20 s
         },
         {
             text = _("Browse file highlights"),
-            callback = function()
-                Alert("Not implemented yet.")
-                return true
-            end,
+            callback = AnnotationsView
         },
         {
             text = _("Failed matches"),
-            callback = function()
-                Alert("Not implemented yet.")
-                return true
-            end,
+            callback = FailedTargetsView
         },
         {
             text = _("Settings"),

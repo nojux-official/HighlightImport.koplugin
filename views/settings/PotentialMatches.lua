@@ -1,8 +1,8 @@
 local _ = require("gettext")
 local modal = require("components.Modal")
 
-function FailedTargetsView()
+function PotentialMatches()
     modal(_("Failed targets"), {})
 end
 
-return FailedTargetsView
+return PotentialMatches
