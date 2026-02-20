@@ -4,11 +4,14 @@ local logger = require("logger")
 local MyClipping = require("services.MyClipping")
 
 local getMenu = require("views/Menu")
+local UIManager = require("ui/uimanager")  
+local AnnotationsView = require("views.annotations.Annotations")
+local AnnotationView = require("views.annotations.Annotation")
 
 
 local HighlightImport = Widget:extend{
     name = "Highlight Import",
-    file_path = "",
+    file_path = "/home/nojus/Desktop/JP_test/My Clippings.txt",
     
 }
 
@@ -19,6 +22,11 @@ end
 function HighlightImport:onReaderReady()
 
     self.ui.menu:registerToMainMenu(self)
+
+    UIManager:nextTick(function()
+        AnnotationsView(self)
+        -- AnnotationView(self)    
+    end)
 end
 
 function HighlightImport:addToMainMenu(menu_items)
