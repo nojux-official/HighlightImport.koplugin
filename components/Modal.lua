@@ -10,14 +10,13 @@ function Modal(title, items)
         
     local menu = Menu:new{  
         title = title,  
-            item_table = items,  
+        item_table = items,  
         items_per_page = 10,  
         covers_fullscreen = true,  
         is_borderless = true,  
         is_popout = false,  
     }  
-    UIManager:show(menu)
-
+    return menu
 end
 
 return Modal
