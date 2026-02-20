@@ -11,7 +11,7 @@ local Alert = require("components.Alert")
 local Modal = require("components.Modal")
 
 
-function buildItemList(targets, modal)
+function buildItemList(targets, ctx)
     local modalEntries = {}
 
     for _, target in ipairs(targets) do
@@ -24,7 +24,6 @@ function buildItemList(targets, modal)
 
         local currentTargetIdx = #modalEntries + 1 -- will be accessible in callback
         local targetsRef = targets
-        local modalRef = modal
         
         modalEntries[currentTargetIdx] = {
             text = string.format("%s %s", toggle, annotation),
@@ -35,10 +34,9 @@ function buildItemList(targets, modal)
                 if(targetsRef[currentTargetIdx] == ITargetStatus.SELECTED) then
                     targetsRef[currentTargetIdx] = ITargetStatus.ADDED
                 end
-                UIManager:close(modalRef)  
-                -- UIManager:show(modalRef)
-                -- self:updateModalEntries() 
-                -- UIManager:sendEvent(require("ui/event"):new("Refresh"))
+                UIManager:close(ctx["modalRef"])
+
+                ctx["recreateFunc"]()
             end,
         }
     end
@@ -62,22 +60,25 @@ function ImportsView(instance)
                     local query = entry[1].text
                     targets[#targets + 1] = {
                         annotation = query,
-                        status = ITargetStatus.ADDED
+                        status = ITargetStatus.SELECTED
                     }
                 end
             end
         end
     end
 
+    local function recreate()
+        local ctx = {}
+        local modalEntries = buildItemList(targets, ctx)  
+        local modal = Modal(_("Annotations (file)"), modalEntries)  
+        ctx["modalRef"] = modal
+        ctx["recreateFunc"] = recreate
+        UIManager:show(modal)
 
-    local modalEntries = buildItemList(targets)
-    local modal = Modal(_("Annotations (file)"), modalEntries, modal)
+        logger.dbg("HighlightImport: recreate ImportsViewModal")
+    end 
 
-    
-
-    UIManager:show(modal)
-    -- UIManager:close(modal)
-    
+    recreate()
 end
 
 return ImportsView
