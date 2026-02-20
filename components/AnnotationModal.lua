@@ -15,17 +15,23 @@ function AnnotationModal(title, content, prev_item, next_item, current, total)
     
 
     local textviewer = TextViewer:new{  
-        title = "Annotation Details",  
-        text = "text text text",  
+        title = title,  
+        text = content,  
         text_type = "bookmark", -- "general", "code"
         buttons_table = {  
             {  
                 {text = "◁", enabled = current > 1, callback = prev_item},  
                 {text = "▷", enabled = current < total, callback = next_item},  
-            }  
+                {text = "▷", enabled = current < total, callback = next_item},  
+            },
+            {  
+                {text = "◁", enabled = current > 1, callback = prev_item},  
+                {text = "▷", enabled = current < total, callback = next_item},  
+                {text = "▷", enabled = current < total, callback = next_item},  
+            }    
         }  
     }  
     UIManager:show(textviewer)
 end
 
-  
+return AnnotationModal

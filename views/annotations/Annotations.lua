@@ -1,5 +1,6 @@
 local _ = require("gettext")
 local MyClipping = require("services.MyClipping")
+local logger = require("logger")
 
 local UIManager = require("ui/uimanager")
 local AnnotationView = require("views.annotations.Annotation")
@@ -30,9 +31,6 @@ function AnnotationsView(instance)
             end
         end
     end
-            
-     MyClipping:getClippingsFromBook(clippings, instance.file_path)
-
 
     modal(_("Annotations (file)"), modalEntries)
 end

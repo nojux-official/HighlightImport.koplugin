@@ -23,7 +23,9 @@ function GetMenu(instance)
             text_func = function()
                 return instance.file_path ~= "" and ">Import<" or "Import"
             end,
-            callback = ImportsView
+            callback = function()
+                ImportsView(instance)
+            end
         },
         {
             text =  _("Status"),
@@ -50,9 +52,9 @@ Elapsed time: 20 s
         },
         {
             text = _("Browse file highlights"),
-            callback = function()
-                AnnotationsView(instance)
-            end
+                callback = function()
+                    AnnotationsView(instance)
+                end
         },
         {
             text = _("Failed matches"),
