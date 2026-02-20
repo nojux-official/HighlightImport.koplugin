@@ -28,12 +28,14 @@ function buildItemList(targets, ctx)
         modalEntries[currentTargetIdx] = {
             text = string.format("%s %s", toggle, annotation),
             callback = function()
-                if(targetsRef[currentTargetIdx] == ITargetStatus.ADDED) then
-                    targetsRef[currentTargetIdx] = ITargetStatus.SELECTED
+                if(targetsRef[currentTargetIdx].status == ITargetStatus.ADDED) then
+                    targetsRef[currentTargetIdx].status = ITargetStatus.SELECTED
+                else
+                    if(targetsRef[currentTargetIdx].status == ITargetStatus.SELECTED) then
+                        targetsRef[currentTargetIdx].status = ITargetStatus.ADDED
+                    end
                 end
-                if(targetsRef[currentTargetIdx] == ITargetStatus.SELECTED) then
-                    targetsRef[currentTargetIdx] = ITargetStatus.ADDED
-                end
+
                 UIManager:close(ctx["modalRef"])
 
                 ctx["recreateFunc"]()
@@ -60,7 +62,7 @@ function ImportsView(instance)
                     local query = entry[1].text
                     targets[#targets + 1] = {
                         annotation = query,
-                        status = ITargetStatus.SELECTED
+                        status = ITargetStatus.ADDED
                     }
                 end
             end
