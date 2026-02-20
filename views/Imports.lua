@@ -36,9 +36,9 @@ function buildItemList(targets, ctx)
                     end
                 end
 
+                local page = ctx["modalRef"].page
                 UIManager:close(ctx["modalRef"])
-
-                ctx["recreateFunc"]()
+                ctx["recreateFunc"](page)
             end,
         }
     end
@@ -69,13 +69,15 @@ function ImportsView(instance)
         end
     end
 
-    local function recreate()
+    local function recreate(page)
+        if not page then page = 1 end
         local ctx = {}
         local modalEntries = buildItemList(targets, ctx)  
         local modal = Modal(_("Annotations (file)"), modalEntries)  
         ctx["modalRef"] = modal
         ctx["recreateFunc"] = recreate
         UIManager:show(modal)
+        modal:onGotoPage(page)  
 
         logger.dbg("HighlightImport: recreate ImportsViewModal")
     end 
