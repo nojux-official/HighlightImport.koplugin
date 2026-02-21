@@ -5,7 +5,7 @@ local logger = require("logger")
 local UIManager = require("ui/uimanager")
 local AnnotationView = require("views.annotations.Annotation")
 local Alert = require("components.Alert")
-local modal = require("components.Modal")
+local Modal = require("components.Modal")
 
 function AnnotationsView(instance)
 
@@ -32,7 +32,8 @@ function AnnotationsView(instance)
         end
     end
 
-    modal(_("Annotations (file)"), modalEntries)
+    local modal = Modal(_("Annotations (file)"), modalEntries)
+    UIManager:show(modal)
 end
 
 return AnnotationsView

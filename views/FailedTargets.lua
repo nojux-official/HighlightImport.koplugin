@@ -1,8 +1,11 @@
 local _ = require("gettext")
-local modal = require("components.Modal")
+local UIManager = require("ui/uimanager")
+local Modal = require("components.Modal")
 
 function FailedTargetsView()
-    modal(_("Failed targets"), {})
+    local modal = Modal(_("Failed targets"), {})
+    UIManager:show(modal)
+
 end
 
 return FailedTargetsView
