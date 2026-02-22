@@ -7,6 +7,7 @@ local getSettings = require("views.settings.Settings")
 local fileSelector = require("components.fileSelector")
 local Alert = require("components.Alert")
 local Popup = require("components.Popup")
+local StatusPopup = require("components.StatusPopup")
 
 
 function GetMenu(instance)
@@ -29,26 +30,7 @@ function GetMenu(instance)
         },
         {
             text =  _("Status"),
-            callback = function()
-                -- highlights on document (no need to show)
-                -- highlights on clippings but not on document (to be imported)
-                -- highlights on clippings (but cannot be mapped to document)
-                -- imported highlights (they intersect between documents and the clippings)
-                -- scanning progress
-                -- stats, diagram, etc.
-                Popup("Import status", [[
-Importing from /ff/dsd/.../book.txt
-Status: in progress
-Suceeded: 100
-Skipped: 15
-Failed: 2
-Remaining: 50
-Elapsed time: 20 s
-
-]])
-                -- alert("Not implemented yet.")
-                return true
-            end,
+            callback = StatusPopup
         },
         {
             text = _("Browse file highlights"),

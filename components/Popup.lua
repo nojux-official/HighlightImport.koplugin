@@ -8,10 +8,7 @@ local Device = require("device")
 local Font = require("ui/font")
 local Screen = Device.screen
 
-local useImportStatusButtons = require("composables/useImportStatusButtons")
-
-
-function Popup(title, content)
+function Popup(title, content, buttons)
     
     local content = VerticalGroup:new{  
         TextBoxWidget:new{  
@@ -24,11 +21,11 @@ function Popup(title, content)
     local popupDialog = ButtonDialog:new{  
         title = title,  
         _added_widgets = { content },  
-        buttons = { useImportStatusButtons(popupDialog) },  
+        buttons = { buttons },  
         modal = true,  
         dismissable = true,  
     }
-    UIManager:show(popupDialog)
+    return popupDialog
 
 end
 
