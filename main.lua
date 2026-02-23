@@ -2,11 +2,14 @@ local Widget = require("ui/widget/widget")
 local _ = require("gettext")
 local logger = require("logger")
 local MyClipping = require("services.MyClipping")
+local Import = require("services.LocalMatching")
 
 local getMenu = require("views/Menu")
 local UIManager = require("ui/uimanager")  
 local AnnotationsView = require("views.annotations.Annotations")
 local AnnotationView = require("views.annotations.Annotation")
+local ImportsView = require("views.Imports")
+local StatusPopup = require("components.StatusPopup")
 
 
 local HighlightImport = Widget:extend{
@@ -24,9 +27,15 @@ function HighlightImport:onReaderReady()
     self.ui.menu:registerToMainMenu(self)
 
     UIManager:nextTick(function()
-        AnnotationsView(self)
+        -- AnnotationsView(self)
         -- AnnotationView(self)    
+        -- ImportsView(self)
+        -- StatusPopup()
+
+
     end)
+
+    Import(self)
 end
 
 function HighlightImport:addToMainMenu(menu_items)

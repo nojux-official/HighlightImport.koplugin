@@ -4,29 +4,38 @@ local Math = require("optmath")
 local _ = require("gettext")
 local logger = require("logger")
 
+local Document = {}
 
-function HighlightImport:isDocReady()
-    return self.document and true or false
+function Document:new(instance)
+    local obj = {instance = instance}
+    setmetatable(obj, self)
+    self.__index = self
+    return obj
 end
 
-function HighlightImport:getLastPercent()
-    if self.ui.document.info.has_pages then
-        return Math.roundPercent(self.ui.paging:getLastPercent())
+
+function Document:IsDocReady()
+    return self.instance.document and true or false
+end
+
+function Document:GetLastPercent()
+    if self.instance.ui.document.info.has_pages then
+        return Math.roundPercent(self.instance.ui.paging:getLastPercent())
     else
-        return Math.roundPercent(self.ui.rolling:getLastPercent())
+        return Math.roundPercent(self.instance.ui.rolling:getLastPercent())
     end
 end
 
-function HighlightImport:getLastProgress()
-    if self.ui.document.info.has_pages then
-        return self.ui.paging:getLastProgress()
+function Document:GetLastProgress()
+    if self.instance.ui.document.info.has_pages then
+        return self.instance.ui.paging:getLastProgress()
     else
-        return self.ui.rolling:getLastProgress()
+        return self.instance.ui.rolling:getLastProgress()
     end
 end
 
-function HighlightImport:createHighlightFromXPointer(start_xp, end_xp, text)
-    self.ui.highlight.selected_text = {
+function Document:CreateHighlightFromXPointer(start_xp, end_xp, text)
+    self.instance.ui.highlight.selected_text = {
         text = text,
         pos0 = start_xp,
         pos1 = end_xp,
@@ -34,23 +43,23 @@ function HighlightImport:createHighlightFromXPointer(start_xp, end_xp, text)
         -- sboxes = self.document:getScreenBoxesFromPositions(start_xp, end_xp)
     }
     
-    local index = self.ui.highlight:saveHighlight(true)
+    local index = self.instance.ui.highlight:saveHighlight(true)
     
-    self.ui.highlight:clear()
+    self.instance.ui.highlight:clear()
     
     return index
 end
 
 
 
-function HighlightImport:loadNativeHighlights()
-    if not self:isDocReady() then return end
-    self.ui.annotation:updatePageNumbers(true)
-    local clippings = self.parser:parseCurrentDoc()
-    self:serializeClippings(clippings)
+function Document:LoadNativeHighlights()
+    if not self:IsDocReady() then return end
+    self.instance.ui.annotation:updatePageNumbers(true)
+    local clippings = self.instance.parser:parseCurrentDoc()
+    self:SerializeClippings(clippings)
 end
 
-function HighlightImport:serializeClippings(clippings)
+function Document:SerializeClippings(clippings)
     if type(clippings) ~= "table" then return end
     local exportables = {}
     for _title, booknotes in pairs(clippings) do
@@ -68,3 +77,4 @@ function HighlightImport:serializeClippings(clippings)
     return RapidJSON.encode(exportables, { indent = true })
 end
 
+return Document
