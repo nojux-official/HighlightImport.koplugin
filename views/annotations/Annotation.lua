@@ -1,32 +1,17 @@
 local _ = require("gettext")
-local MyClipping = require("services.MyClipping")
+local ParseClippings = require("utils.ParseClippings")
+
 
 local AnnotationModal = require("components.AnnotationModal")
 
-function AnnotationView(instance)
+function AnnotationView(instance, idx)
+    if idx == nil then idx = 1 end
 
-    -- local modalEntries = {}
-    
-    -- local clippings = instance.parser:parseFile(instance.file_path)
-
-    -- if type(clippings) ~= "table" then return end
-    
-    -- for _title, booknotes in pairs(clippings) do
-    --     if type(booknotes) ~= "table" or #booknotes == 0 then
-    --     else
-    --         for _, entry in ipairs(booknotes) do
-    --             if entry[1].sort == "highlight" then 
-    --                 local query = entry[1].text
-    --                 modalEntries[#modalEntries + 1] = { text = query }
-    --             end
-    --         end
-    --     end
-    -- end
-            
-    --  MyClipping:getClippingsFromBook(clippings, instance.file_path)
+    ParseClippings(instance)
 
 
-    AnnotationModal(_("Browse"), _("Sample Annotation Text"), "", "", 1, 1)
+
+    AnnotationModal(_("Browse"), _(instance.targets[idx].annotation), "", "", idx, #instance.targets)
 end
 
 return AnnotationView
