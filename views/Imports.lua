@@ -3,6 +3,7 @@ local MyClipping = require("services.MyClipping")
 local logger = require("logger")
 
 local ITargetStatus = require("interfaces.ITargetStatus")
+local Import = require("services.LocalMatching")
 
 local UIManager = require("ui/uimanager")
 local ButtonTable = require("ui/widget/buttontable")
@@ -78,16 +79,21 @@ function ImportsView(instance)
         local modalEntries = buildItemList(targets, ctx)  
         local buttonTable = ButtonTable:new{
             buttons = {{
-                {text="Import all", callback=function() useCloseButton(ctx) end},
-                {text="Import selected", callback=function() useCloseButton(ctx) end},
+                {text="Import all", callback=function() Import(instance); useCloseButton(ctx) end},
+                {text="Import selected", callback=function() Import(instance); useCloseButton(ctx) end},
                 {text="Toggle browsing", callback=function() useCloseButton(ctx) end},
             }}
         }
 
 
         local modal = Modal(_("Annotations (file)"), modalEntries, buttonTable)  
+        --for displaying checkbox updates
         ctx["modalRef"] = modal
         ctx["recreateFunc"] = recreate
+        -- for modal closing
+        ctx["parent"] = modal
+
+
         UIManager:show(modal)
         modal:onGotoPage(page)  
 
