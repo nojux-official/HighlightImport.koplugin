@@ -4,11 +4,13 @@ local logger = require("logger")
 
 local ITargetStatus = require("interfaces.ITargetStatus")
 
-
 local UIManager = require("ui/uimanager")
+local ButtonTable = require("ui/widget/buttontable")
 local AnnotationView = require("views.annotations.Annotation")
 local Alert = require("components.Alert")
 local Modal = require("components.Modal")
+local useCloseButton = require("composables.useCloseButton")
+
 
 
 function buildItemList(targets, ctx)
@@ -72,8 +74,18 @@ function ImportsView(instance)
     local function recreate(page)
         if not page then page = 1 end
         local ctx = {}
+        
         local modalEntries = buildItemList(targets, ctx)  
-        local modal = Modal(_("Annotations (file)"), modalEntries)  
+        local buttonTable = ButtonTable:new{
+            buttons = {{
+                {text="Import all", callback=function() useCloseButton(ctx) end},
+                {text="Import selected", callback=function() useCloseButton(ctx) end},
+                {text="Toggle browsing", callback=function() useCloseButton(ctx) end},
+            }}
+        }
+
+
+        local modal = Modal(_("Annotations (file)"), modalEntries, buttonTable)  
         ctx["modalRef"] = modal
         ctx["recreateFunc"] = recreate
         UIManager:show(modal)

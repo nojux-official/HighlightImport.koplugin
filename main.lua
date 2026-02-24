@@ -31,13 +31,13 @@ function HighlightImport:onReaderReady()
     UIManager:nextTick(function()
         -- AnnotationsView(self)
         -- AnnotationView(self)    
-        -- ImportsView(self)
+        ImportsView(self)
         -- StatusPopup()
 
 
     end)
 
-    Import(self)
+    -- Import(self)
 end
 
 function HighlightImport:addToMainMenu(menu_items)

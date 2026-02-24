@@ -9,23 +9,25 @@ local Font = require("ui/font")
 local Menu = require("components.MenuWidget")
 
 
-function Modal(title, items)
+function Modal(title, items, buttonTable)
+    if(buttonTable == nil) then
+        buttonTable = ButtonTable:new{ buttons = {} }
+    end
+
+    ctx = {}
         
     local menu = Menu:new{  
         title = title,  
         item_table = items,  
-        button_table = ButtonTable:new{  
-            buttons = {{
-                {text="Import all", callback=function() end},
-                {text="Import selected", callback=function() end},
-                {text="Toggle browsing", callback=function() end},
-            }}
-        },
+        button_table = buttonTable,
         items_per_page = 10,  
         covers_fullscreen = true,  
         is_borderless = true,  
         is_popout = false,
     }  
+
+    ctx.parent = menu
+
     return menu
 end
 
