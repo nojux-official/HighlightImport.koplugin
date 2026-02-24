@@ -1,8 +1,8 @@
 local _ = require("gettext")
-local MyClipping = require("services.MyClipping")
 local logger = require("logger")
 
 local ITargetStatus = require("interfaces.ITargetStatus")
+local ParseClippings = require("utils.ParseClippings")
 local Import = require("services.LocalMatching")
 
 local UIManager = require("ui/uimanager")
@@ -51,35 +51,23 @@ end
 
 function ImportsView(instance)
 
-    local targets = {}
+    instance.targets = ParseClippings(instance)
 
-    local clippings = instance.parser:parseFile(instance.file_path)
-
-    if type(clippings) ~= "table" then return end
-    
-    for _title, booknotes in pairs(clippings) do
-        if type(booknotes) ~= "table" or #booknotes == 0 then
-        else
-            for _, entry in ipairs(booknotes) do
-                if entry[1].sort == "highlight" then 
-                    local query = entry[1].text
-                    targets[#targets + 1] = {
-                        annotation = query,
-                        status = ITargetStatus.ADDED
-                    }
-                end
-            end
-        end
-    end
 
     local function recreate(page)
         if not page then page = 1 end
         local ctx = {}
         
-        local modalEntries = buildItemList(targets, ctx)  
+        local modalEntries = buildItemList(instance.targets, ctx)  
         local buttonTable = ButtonTable:new{
             buttons = {{
-                {text="Import all", callback=function() Import(instance); useCloseButton(ctx) end},
+                {text="Import all", callback=function()
+                    for idx, _ in ipairs(instance.targets) do
+                        instance.targets[idx].status = ITargetStatus.SELECTED
+                    end
+                    Import(instance)
+                    useCloseButton(ctx)
+                end},
                 {text="Import selected", callback=function() Import(instance); useCloseButton(ctx) end},
                 {text="Toggle browsing", callback=function() useCloseButton(ctx) end},
             }}
