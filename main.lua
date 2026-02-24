@@ -5,7 +5,9 @@ local MyClipping = require("services.MyClipping")
 local Import = require("services.LocalMatching")
 
 local getMenu = require("views/Menu")
-local UIManager = require("ui/uimanager")  
+local UIManager = require("ui/uimanager")
+local ReaderUI = require("apps/reader/readerui")  
+
 local AnnotationsView = require("views.annotations.Annotations")
 local AnnotationView = require("views.annotations.Annotation")
 local ImportsView = require("views.Imports")

@@ -1,12 +1,6 @@
 local logger = require("logger")
 local RapidJSON = require("rapidjson")
 
--- local IsDocReady = require("services.Document").IsDocReady
--- local GetLastPercent = require("services.Document").GetLastPercent
--- local GetLastProgress = require("services.Document").GetLastProgress
--- local CreateHighlightFromXPointer = require("services.Document").CreateHighlightFromXPointer
--- local LoadNativeHighlights = require("services.Document").LoadNativeHighlights
--- local SerializeClippings = require("services.Document").SerializeClippings
 local Document = require("services.Document")
 
 return function (instance)
@@ -25,6 +19,14 @@ return function (instance)
     logger.dbg(string.format("HighlighitImport: Local matching algorithm starting. Clippings: %s", instance.file_paths))
 
     if not doc:IsDocReady() then return end
+
+
+    -- ReaderUI instance
+    if not instance.ui then error("No ReaderUI instance running") end  
+    
+    -- ReaderSearch 
+    local search = instance.ui.search
+  
     
     local clippings = instance.parser:parseFile(instance.file_path)
 
@@ -48,8 +50,9 @@ return function (instance)
 
             local query = entry[1].text
             logger.dbg("HighlightImport: Processing " .. query)
-            -- pattern, origin, direction, case_insensitive, page, regex, max_hits
-            local res = instance.document:findText(query, -1, 0, true, 1, false, 1)
+            -- direction=0, no regex, case_insensitive  
+            local res = search:searchFromCurrent(query, 0, false, true)
+
             if not res or #res == 0 then
                 logger.dbg("HighlightImport: Failed to find text: " .. query)
                 failures = failures + 1
