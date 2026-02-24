@@ -7,7 +7,7 @@ local Import = require("services.LocalMatching")
 
 local UIManager = require("ui/uimanager")
 local ButtonTable = require("ui/widget/buttontable")
-local AnnotationView = require("views.annotations.Annotation")
+local AnnotationsView = require("views.annotations.Annotations")
 local Alert = require("components.Alert")
 local Modal = require("components.Modal")
 local useCloseButton = require("composables.useCloseButton")
@@ -69,7 +69,7 @@ function ImportsView(instance)
                     useCloseButton(ctx)
                 end},
                 {text="Import selected", callback=function() Import(instance); useCloseButton(ctx) end},
-                {text="Toggle browsing", callback=function() useCloseButton(ctx) end},
+                {text="Toggle browsing", callback=function() useCloseButton(ctx); AnnotationsView(instance) end},
             }}
         }
 
