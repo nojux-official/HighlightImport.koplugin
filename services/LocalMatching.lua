@@ -33,7 +33,7 @@ return function (instance)
     local search = instance.ui.search
   
 
-local function calculateStats(ctx)
+    local function calculateStats(ctx)
         ctx.total = 0
         ctx.succeeded=0
         ctx.skipped=0
@@ -59,7 +59,7 @@ local function calculateStats(ctx)
 
     local function recreate(ctx)
 
-        UIManager:close(popup)
+        UIManager:close(ctx.popup)
 
         
         -- local modalEntries = calculateStats(ctx)  
@@ -90,6 +90,7 @@ ctx.succeeded, ctx.skipped, ctx.failed, ctx.remaining
 )
 
         local popup = StatusPopup(content)
+        ctx.popup = popup
         UIManager:show(popup)  
         --for displaying checkbox updates
 
@@ -105,9 +106,6 @@ ctx.succeeded, ctx.skipped, ctx.failed, ctx.remaining
 
     local ctx = {}
     ctx.targets = instance.targets
-
-
-    -- instance.targets = ParseClippings(instance)
 
 
     for idx, target in ipairs(instance.targets) do
@@ -133,12 +131,19 @@ ctx.succeeded, ctx.skipped, ctx.failed, ctx.remaining
 
         instance.targets[idx].status = ITargetStatus.ALGORITHM_RESOLVED
 
-        calculateStats(ctx)
-        recreate(ctx)
+        if(idx % 10) then
+            UIManager:nextTick(function()
+                calculateStats(ctx)
+                recreate(ctx)
+            end)    
+        end
 
         ::continueInner::
     end
-        
+    
+
+    calculateStats(ctx)
+    recreate(ctx)
     logger.dbg("HighlightImport: algorithm finished.")
 
 end

@@ -65,10 +65,13 @@ function ImportsView(instance)
                     for idx, _ in ipairs(instance.targets) do
                         instance.targets[idx].status = ITargetStatus.SELECTED
                     end
-                    Import(instance)
                     useCloseButton(ctx)
+                    UIManager:nextTick(function()
+                        Import(instance)
+            
+                    end)
                 end},
-                {text="Import selected", callback=function() Import(instance); useCloseButton(ctx) end},
+                {text="Import selected", callback=function() useCloseButton(ctx); Import(instance);  end},
                 {text="Toggle browsing", callback=function() useCloseButton(ctx); AnnotationsView(instance) end},
             }}
         }
