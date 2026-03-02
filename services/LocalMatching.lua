@@ -80,50 +80,44 @@ ctx.failed, ctx.remaining
         return ctx.popup
     end
 
-    -- local ctx = {}
-    -- ctx.targets = instance.targets
-    -- ctx.popup = recreateStatusPopup(ctx)
-  
-
-
-    for idx, target in ipairs(instance.targets) do
-        if target.status ~= ITargetStatus.SELECTED then goto continueInner end
-
-        local serialized = RapidJSON.encode(target.annotation, { indent = true })
-        logger.dbg("Entry: " .. tostring(serialized))
-
-        logger.dbg("HighlightImport: Processing " .. target.annotation)
-        -- direction=0, no regex, case_insensitive  
-        local res = search:searchFromCurrent(target.annotation, 0, false, true)
-
-        if not res or #res == 0 then
-            logger.dbg("HighlightImport: Failed to find match: " .. target.annotation)
-            instance.targets[idx].status = ITargetStatus.FAILED
-            goto continueInner
-        end
-        local xpointer_start = res[1].start
-        local xpointer_end = res[1]["end"]
-        logger.dbg("HighlightImport: Found text at: " .. xpointer_start .. " to " .. xpointer_end)
-        
-        doc:CreateHighlightFromXPointer(xpointer_start, xpointer_end, target.annotation)
-
-        instance.targets[idx].status = ITargetStatus.ALGORITHM_RESOLVED
-
-        -- if (idx % 3 == 0) or (idx == #instance.targets) then
-        --     updateStatusPopup(ctx)
-        --     UIManager:forceRePaint()
-        -- end
-
-        ::continueInner::
-    end
-    
     local ctx = {}
     ctx.targets = instance.targets
-    calculateStats(ctx)
-    recreateStatusPopup(ctx)
+    ctx.popup = recreateStatusPopup(ctx)
+    
+    UIManager:nextTick(function()
+        for idx, target in ipairs(instance.targets) do
+            if target.status ~= ITargetStatus.SELECTED then goto continueInner end
+
+            local serialized = RapidJSON.encode(target.annotation, { indent = true })
+            logger.dbg("Entry: " .. tostring(serialized))
+
+            logger.dbg("HighlightImport: Processing " .. target.annotation)
+            -- direction=0, no regex, case_insensitive  
+            local res = search:searchFromCurrent(target.annotation, 0, false, true)
+
+            if not res or #res == 0 then
+                logger.dbg("HighlightImport: Failed to find match: " .. target.annotation)
+                instance.targets[idx].status = ITargetStatus.FAILED
+                goto continueInner
+            end
+            local xpointer_start = res[1].start
+            local xpointer_end = res[1]["end"]
+            logger.dbg("HighlightImport: Found text at: " .. xpointer_start .. " to " .. xpointer_end)
+            
+            doc:CreateHighlightFromXPointer(xpointer_start, xpointer_end, target.annotation)
+
+            instance.targets[idx].status = ITargetStatus.ALGORITHM_RESOLVED
+
+            if (idx % 3 == 0) or (idx == #instance.targets) then
+                recreateStatusPopup(ctx)
+                -- UIManager:forceRePaint()
+            end
+
+            ::continueInner::
+        end
+    end)
     logger.dbg("HighlightImport: algorithm finished.")
 
 end
 
 
-    
