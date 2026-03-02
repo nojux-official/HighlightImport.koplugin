@@ -8,6 +8,7 @@ local fileSelector = require("components.fileSelector")
 local Alert = require("components.Alert")
 local Popup = require("components.Popup")
 local StatusPopup = require("components.StatusPopup")
+local useRecreateStatusPopup = require("composables/useRecreateStatusPopup")
 
 
 function GetMenu(instance)
@@ -30,7 +31,13 @@ function GetMenu(instance)
         },
         {
             text =  _("Status"),
-            callback = StatusPopup
+            callback = function()
+                local ctx = {}
+                ctx.file_path = instance.file_path
+                ctx.targets = instance.targets
+                ctx.finished = true
+                ctx.popup = useRecreateStatusPopup(ctx)
+            end
         },
         {
             text = _("Browse file highlights"),
