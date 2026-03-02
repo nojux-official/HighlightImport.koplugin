@@ -84,7 +84,6 @@ ctx.failed, ctx.remaining
     ctx.targets = instance.targets
     ctx.popup = recreateStatusPopup(ctx)
     
-    UIManager:nextTick(function()
         for idx, target in ipairs(instance.targets) do
             if target.status ~= ITargetStatus.SELECTED then goto continueInner end
 
@@ -110,12 +109,11 @@ ctx.failed, ctx.remaining
 
             if (idx % 3 == 0) or (idx == #instance.targets) then
                 recreateStatusPopup(ctx)
-                -- UIManager:forceRePaint()
+                UIManager:forceRePaint()
             end
 
             ::continueInner::
         end
-    end)
     logger.dbg("HighlightImport: algorithm finished.")
 
 end
