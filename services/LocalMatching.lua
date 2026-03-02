@@ -71,7 +71,7 @@ Status: %s
 Succeeded: %d / %d
 Failed: %d
 Remaining: %d]],
-instance.file_path, 'in progress',
+instance.file_path, (ctx.finished ~= nil and ctx.finished) and 'finished' or 'in progress',
 ctx.succeeded, ctx.total,
 ctx.failed, ctx.remaining
 )
@@ -82,6 +82,7 @@ ctx.failed, ctx.remaining
 
     local ctx = {}
     ctx.targets = instance.targets
+    ctx.finished = false
     ctx.popup = recreateStatusPopup(ctx)
     
         for idx, target in ipairs(instance.targets) do
@@ -108,6 +109,7 @@ ctx.failed, ctx.remaining
             instance.targets[idx].status = ITargetStatus.ALGORITHM_RESOLVED
 
             if (idx % 3 == 0) or (idx == #instance.targets) then
+                if (idx == #instance.targets) then ctx.finished = true end
                 recreateStatusPopup(ctx)
                 UIManager:forceRePaint()
             end
