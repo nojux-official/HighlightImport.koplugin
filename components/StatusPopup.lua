@@ -3,7 +3,7 @@ local Popup = require("components.Popup")
 local useCloseButton = require("composables/useCloseButton")
 
 
-return function (content)
+return function(content, ctx)
     -- highlights on document (no need to show)
     -- highlights on clippings but not on document (to be imported)
     -- highlights on clippings (but cannot be mapped to document)
@@ -11,7 +11,12 @@ return function (content)
     -- scanning progress
     -- stats, diagram, etc.
 
+    if ctx == nil then ctx = {} end
     -- ctx.parent = self
+
+    if ctx.popup then
+        return UIManager:close(ctx.popup)
+    end
 
     local buttons = {
         { text = "Cancel", callback = function() useCloseButton(ctx) end }, 
@@ -21,15 +26,11 @@ return function (content)
 
     
 
-    local popup = Popup("Import status", content , buttons)
-
-
-
-    -- ctx["parent"] = popup
+    local popup = Popup("Import status", content, buttons)
+    ctx["parent"] = popup
 
     -- UIManager:show(popup)
 
-    -- alert("Not implemented yet.")
-    -- return true
     return popup
 end
+

@@ -1,5 +1,4 @@
 local _ = require("gettext")
-
 local logger = require("logger")
 local RapidJSON = require("rapidjson")
 local ITargetStatus = require("interfaces.ITargetStatus")
@@ -31,7 +30,7 @@ return function (instance)
     
     -- ReaderSearch 
     local search = instance.ui.search
-  
+
 
     local function calculateStats(ctx)
         ctx.total = 0
@@ -57,55 +56,34 @@ return function (instance)
     end
 
 
-    local function recreate(ctx)
 
-        UIManager:close(ctx.popup)
+    local function recreateStatusPopup(ctx)
+        if ctx == nil then return end
 
+        if ctx.popup then
+            UIManager:close(ctx.popup)
+        end
         
-        -- local modalEntries = calculateStats(ctx)  
-        -- local buttonTable = ButtonTable:new{
-        --     buttons = {{
-        --         {text="Import all", callback=function()
-        --             for idx, _ in ipairs(instance.targets) do
-        --                 instance.targets[idx].status = ITargetStatus.SELECTED
-        --             end
-        --             Import(instance)
-        --             useCloseButton(ctx)
-        --         end},
-        --         {text="Import selected", callback=function() Import(instance); useCloseButton(ctx) end},
-        --         {text="Toggle browsing", callback=function() useCloseButton(ctx); AnnotationsView(instance) end},
-        --     }}
-        -- }
-
-
+        calculateStats(ctx)
         local content = string.format([[
 Importing from %s
 Status: %s
-Succeeded: %d
-Skipped: %d
+Succeeded: %d / %d
 Failed: %d
 Remaining: %d]],
 instance.file_path, 'in progress',
-ctx.succeeded, ctx.skipped, ctx.failed, ctx.remaining
+ctx.succeeded, ctx.total,
+ctx.failed, ctx.remaining
 )
-
-        local popup = StatusPopup(content)
-        ctx.popup = popup
-        UIManager:show(popup)  
-        --for displaying checkbox updates
-
-        
-        -- ctx["modalRef"] = popup
-        -- ctx["recreateFunc"] = recreate
-        -- for modal closing
-        -- ctx["parent"] = popup
-
+        ctx.popup = StatusPopup(content, ctx)
+        UIManager:show(ctx.popup)
+        return ctx.popup
     end
 
-
-
-    local ctx = {}
-    ctx.targets = instance.targets
+    -- local ctx = {}
+    -- ctx.targets = instance.targets
+    -- ctx.popup = recreateStatusPopup(ctx)
+  
 
 
     for idx, target in ipairs(instance.targets) do
@@ -131,19 +109,18 @@ ctx.succeeded, ctx.skipped, ctx.failed, ctx.remaining
 
         instance.targets[idx].status = ITargetStatus.ALGORITHM_RESOLVED
 
-        if(idx % 10) then
-            UIManager:nextTick(function()
-                calculateStats(ctx)
-                recreate(ctx)
-            end)    
-        end
+        -- if (idx % 3 == 0) or (idx == #instance.targets) then
+        --     updateStatusPopup(ctx)
+        --     UIManager:forceRePaint()
+        -- end
 
         ::continueInner::
     end
     
-
+    local ctx = {}
+    ctx.targets = instance.targets
     calculateStats(ctx)
-    recreate(ctx)
+    recreateStatusPopup(ctx)
     logger.dbg("HighlightImport: algorithm finished.")
 
 end

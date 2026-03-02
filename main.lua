@@ -16,7 +16,7 @@ local StatusPopup = require("components.StatusPopup")
 
 local HighlightImport = Widget:extend{
     name = "Highlight Import",
-    file_path = "/home/nojus/Desktop/JP_test/My Clippings.txt",
+    file_path = "/home/studentas/projects/HighlightImport.koplugin/stuff/clippings.txt",
     
 }
 

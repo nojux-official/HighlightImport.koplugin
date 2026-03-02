@@ -66,9 +66,9 @@ function ImportsView(instance)
                         instance.targets[idx].status = ITargetStatus.SELECTED
                     end
                     useCloseButton(ctx)
+                    
                     UIManager:nextTick(function()
                         Import(instance)
-            
                     end)
                 end},
                 {text="Import selected", callback=function() useCloseButton(ctx); Import(instance);  end},
