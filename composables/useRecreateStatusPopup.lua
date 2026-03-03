@@ -23,6 +23,10 @@ function calculateStats (ctx)
             ctx.failed = ctx.failed + 1
             ctx.total = ctx.total + 1
         end
+        if target.status == ITargetStatus.SKIPPED then
+            ctx.skipped = ctx.skipped + 1
+            ctx.total = ctx.total + 1
+        end
     end
 end
 
@@ -39,10 +43,11 @@ Importing from %s
 Status: %s
 Succeeded: %d / %d
 Failed: %d
+Skipped: %d
 Remaining: %d]],
 ctx.file_path, (ctx.finished ~= nil and ctx.finished) and 'finished' or 'in progress',
 ctx.succeeded, ctx.total,
-ctx.failed, ctx.remaining
+ctx.failed, ctx.skipped, ctx.remaining
 )
     ctx.popup = StatusPopup(content, ctx)
     UIManager:show(ctx.popup)

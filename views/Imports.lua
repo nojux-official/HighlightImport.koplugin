@@ -71,7 +71,12 @@ function ImportsView(instance)
                         Import(instance)
                     end)
                 end},
-                {text="Import selected", callback=function() useCloseButton(ctx); Import(instance);  end},
+                {text="Import selected", callback=function()
+                    useCloseButton(ctx);
+                    UIManager:nextTick(function()
+                        Import(instance)
+                    end)
+                  end},
                 {text="Toggle browsing", callback=function() useCloseButton(ctx); AnnotationsView(instance) end},
             }}
         }
