@@ -48,7 +48,9 @@ function GetMenu(instance)
         },
         {
             text = _("Failed matches"),
-            callback = FailedTargetsView
+            callback = function()
+                FailedTargetsView(instance)
+            end
         },
         {
             text = _("Settings"),
