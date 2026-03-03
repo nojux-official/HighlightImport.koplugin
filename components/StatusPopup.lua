@@ -8,9 +8,7 @@ return function(content, ctx)
     if ctx == nil then ctx = {} end
 
     local buttons = {
-        { text = "Cancel", callback = function() useCloseButton(ctx) end }, 
-        { text = "Browse", callback = function() useCloseButton(ctx) end },
-        { text = "Background", callback = function() useCloseButton(ctx) end },
+        { text = "Close", callback = function() useCloseButton(ctx) end }, 
     }
 
     local popup = Popup("Import status", content, buttons)

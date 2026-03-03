@@ -46,15 +46,6 @@ function GetMenu(instance)
                 end
         },
         {
-            text = _("Failed matches"),
-            callback = FailedTargetsView
-        },
-        {
-            text = _("Settings"),
-            keep_menu_open = true,
-            sub_item_table = getSettings(instance)
-        },
-        {
             text = _("About"),
             keep_menu_open = true,
             callback = function()

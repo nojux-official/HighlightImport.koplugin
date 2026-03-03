@@ -12,11 +12,12 @@ local AnnotationsView = require("views.annotations.Annotations")
 local AnnotationView = require("views.annotations.Annotation")
 local ImportsView = require("views.Imports")
 local StatusPopup = require("components.StatusPopup")
+local FileSelector = require("components.fileSelector")
 
 
 local HighlightImport = Widget:extend{
     name = "Highlight Import",
-    file_path = "/home/studentas/projects/HighlightImport.koplugin/stuff/clippings.txt",
+    file_path = ""
     
 }
 
@@ -29,15 +30,7 @@ function HighlightImport:onReaderReady()
     self.ui.menu:registerToMainMenu(self)
 
     UIManager:nextTick(function()
-        -- AnnotationsView(self)
-        -- AnnotationView(self)    
-        ImportsView(self)
-        -- StatusPopup()
-
-
     end)
-
-    -- Import(self)
 end
 
 function HighlightImport:addToMainMenu(menu_items)
@@ -48,13 +41,5 @@ function HighlightImport:addToMainMenu(menu_items)
         sub_item_table = getMenu(self)
     }
 end
-
-
-
-
-
-
-
-
 
 return HighlightImport
