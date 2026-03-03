@@ -15,7 +15,9 @@ function GetMenu(instance)
     return
     {
         {
-            text = _("Select file"),
+            text_func = function()
+                return instance.file_path == "" and ">Select file<" or _("Select file")
+            end,
             -- keep_menu_open = true,
             callback = function()
                 fileSelector(instance)
@@ -41,9 +43,9 @@ function GetMenu(instance)
         },
         {
             text = _("Browse file highlights"),
-                callback = function()
-                    AnnotationsView(instance)
-                end
+            callback = function()
+                AnnotationsView(instance)
+            end
         },
         {
             text = _("About"),
