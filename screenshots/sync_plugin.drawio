@@ -1,0 +1,261 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.3.6 Chrome/140.0.7339.249 Electron/38.8.0 Safari/537.36" version="29.3.6" pages="2">
+  <diagram id="HydBQOoEHkLKoIv0Fg0f" name="Existing tools">
+    <mxGraphModel dx="2131" dy="1830" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="FJJ6BeuR-m3f1RlW5ICN-1" parent="1" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" value="webdav/ftp/..." vertex="1">
+          <mxGeometry height="110" width="150" x="350" y="-170" as="geometry" />
+        </mxCell>
+        <mxCell id="FJJ6BeuR-m3f1RlW5ICN-6" edge="1" parent="1" source="FJJ6BeuR-m3f1RlW5ICN-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="FJJ6BeuR-m3f1RlW5ICN-22" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="440" y="40" />
+              <mxPoint x="450" y="40" />
+              <mxPoint x="450" y="20" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FJJ6BeuR-m3f1RlW5ICN-2" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="File-based sync (.sdr DB&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;, book)&lt;/span&gt;" vertex="1">
+          <mxGeometry height="80" width="120" x="380" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="FJJ6BeuR-m3f1RlW5ICN-54" edge="1" parent="1" source="FJJ6BeuR-m3f1RlW5ICN-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="FJJ6BeuR-m3f1RlW5ICN-34" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="FJJ6BeuR-m3f1RlW5ICN-3" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="External (notes?) manager&lt;div&gt;(one way only)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="80" width="120" x="220" y="204" as="geometry" />
+        </mxCell>
+        <mxCell id="FJJ6BeuR-m3f1RlW5ICN-23" edge="1" parent="1" source="FJJ6BeuR-m3f1RlW5ICN-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="FJJ6BeuR-m3f1RlW5ICN-1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="FJJ6BeuR-m3f1RlW5ICN-8" edge="1" parent="1" source="FJJ6BeuR-m3f1RlW5ICN-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="FJJ6BeuR-m3f1RlW5ICN-2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="FJJ6BeuR-m3f1RlW5ICN-9" edge="1" parent="1" source="FJJ6BeuR-m3f1RlW5ICN-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="FJJ6BeuR-m3f1RlW5ICN-3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="FJJ6BeuR-m3f1RlW5ICN-20" edge="1" parent="1" source="FJJ6BeuR-m3f1RlW5ICN-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="FJJ6BeuR-m3f1RlW5ICN-12" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="FJJ6BeuR-m3f1RlW5ICN-5" parent="1" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/intune/Device_Compliance.svg;" value="" vertex="1">
+          <mxGeometry height="68" width="62" x="420" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="FJJ6BeuR-m3f1RlW5ICN-18" edge="1" parent="1" source="FJJ6BeuR-m3f1RlW5ICN-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="FJJ6BeuR-m3f1RlW5ICN-17" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="FJJ6BeuR-m3f1RlW5ICN-21" edge="1" parent="1" source="FJJ6BeuR-m3f1RlW5ICN-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="FJJ6BeuR-m3f1RlW5ICN-19">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="FJJ6BeuR-m3f1RlW5ICN-25" edge="1" parent="1" source="FJJ6BeuR-m3f1RlW5ICN-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="FJJ6BeuR-m3f1RlW5ICN-24">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="FJJ6BeuR-m3f1RlW5ICN-12" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Reading progress/highlight Sync" vertex="1">
+          <mxGeometry height="80" width="120" x="391" y="320" as="geometry" />
+        </mxCell>
+        <UserObject label="www.reddit.com/r/koreader/comments/1klve0o/new_koreader_plugin_sync_your_highlights_across/&#xa;https://github.com/gitalexcampos/koreader-Highlight-Sync" link="www.reddit.com/r/koreader/comments/1klve0o/new_koreader_plugin_sync_your_highlights_across/" id="FJJ6BeuR-m3f1RlW5ICN-17">
+          <mxCell parent="1" style="text;whiteSpace=wrap;fillColor=#d80073;fontColor=#ffffff;strokeColor=#A50040;" vertex="1">
+            <mxGeometry height="40" width="550" x="-110" y="480" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="FJJ6BeuR-m3f1RlW5ICN-29" edge="1" parent="1" source="FJJ6BeuR-m3f1RlW5ICN-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="FJJ6BeuR-m3f1RlW5ICN-27" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="FJJ6BeuR-m3f1RlW5ICN-19" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="[Calibre] highligh sync plugin" vertex="1">
+          <mxGeometry height="30" width="120" x="530" y="460" as="geometry" />
+        </mxCell>
+        <UserObject label="github.com/jasonchoimtt/koreader-syncthing (one direction only)" link="github.com/jasonchoimtt/koreader-syncthing" id="FJJ6BeuR-m3f1RlW5ICN-22">
+          <mxCell parent="1" style="text;whiteSpace=wrap;" vertex="1">
+            <mxGeometry height="40" width="270" x="305" y="-10" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="https://www.reddit.com/r/koreader/comments/1n5klts/i_made_a_plugin_to_sync_highlights_notes_across/&#xa;https://github.com/dani84bs/AnnotationSync.koplugin" link="https://www.reddit.com/r/koreader/comments/1n5klts/i_made_a_plugin_to_sync_highlights_notes_across/" id="FJJ6BeuR-m3f1RlW5ICN-24">
+          <mxCell parent="1" style="text;whiteSpace=wrap;fillColor=#d80073;fontColor=#ffffff;strokeColor=#A50040;" vertex="1">
+            <mxGeometry height="40" width="560" x="-40" y="530" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="FJJ6BeuR-m3f1RlW5ICN-30" edge="1" parent="1" source="FJJ6BeuR-m3f1RlW5ICN-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="FJJ6BeuR-m3f1RlW5ICN-28" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <UserObject label="github.com/koreader/koreader-sync-server (position only)" link="github.com/koreader/koreader-sync-server" id="FJJ6BeuR-m3f1RlW5ICN-27">
+          <mxCell parent="1" style="text;whiteSpace=wrap;" vertex="1">
+            <mxGeometry height="40" width="260" x="590" y="560" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="https://github.com/jberlyn/kosync-dotnet (unclear)" link="https://github.com/jberlyn/kosync-dotnet" id="FJJ6BeuR-m3f1RlW5ICN-28">
+          <mxCell parent="1" style="text;whiteSpace=wrap;" vertex="1">
+            <mxGeometry height="40" width="240" x="580" y="640" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="FJJ6BeuR-m3f1RlW5ICN-47" connectable="0" parent="1" style="group;strokeColor=default;" value="" vertex="1">
+          <mxGeometry height="340" width="570" x="-390" y="60" as="geometry" />
+        </mxCell>
+        <UserObject label="github.com/GeorgeSG/KoInsight (only statistics, one direction, self-hosted)" id="FJJ6BeuR-m3f1RlW5ICN-11">
+          <mxCell parent="FJJ6BeuR-m3f1RlW5ICN-47" style="text;whiteSpace=wrap;" vertex="1">
+            <mxGeometry height="40" width="210" x="300" y="210" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="https://github.com/noembryo/KoHighlights (dekstop/standalone)" link="https://github.com/noembryo/KoHighlights" id="FJJ6BeuR-m3f1RlW5ICN-34">
+          <mxCell parent="FJJ6BeuR-m3f1RlW5ICN-47" style="text;whiteSpace=wrap;" vertex="1">
+            <mxGeometry height="40" width="260" x="310" y="140" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="FJJ6BeuR-m3f1RlW5ICN-35" parent="FJJ6BeuR-m3f1RlW5ICN-47" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" value="https://clippingstore.xyz" vertex="1">
+          <mxGeometry height="76" width="210" x="310" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="FJJ6BeuR-m3f1RlW5ICN-37" parent="FJJ6BeuR-m3f1RlW5ICN-47" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" value="&lt;span style=&quot;text-align: left;&quot;&gt;https://www.duplobookshelf.com&lt;/span&gt;" vertex="1">
+          <mxGeometry height="76" width="210" x="90" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="FJJ6BeuR-m3f1RlW5ICN-39" parent="FJJ6BeuR-m3f1RlW5ICN-47" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" value="&lt;span style=&quot;text-align: left;&quot;&gt;https://www.pastreads.com&lt;/span&gt;" vertex="1">
+          <mxGeometry height="76" width="210" x="100" y="150" as="geometry" />
+        </mxCell>
+        <UserObject label="https://logseq.com (general" link="https://logseq.com" id="FJJ6BeuR-m3f1RlW5ICN-40">
+          <mxCell parent="FJJ6BeuR-m3f1RlW5ICN-47" style="text;whiteSpace=wrap;" vertex="1">
+            <mxGeometry height="40" width="130" x="140" y="260" as="geometry" />
+          </mxCell>
+        </UserObject>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="Pipeline" id="eF86IrGVsd2ViEC5meii">
+    <mxGraphModel dx="1281" dy="730" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-19" parent="1" style="verticalAlign=top;align=left;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;whiteSpace=wrap;fillColor=none;" value="Koreader system or similar" vertex="1">
+          <mxGeometry height="380" width="550" x="930" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-1" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" value="Notes and highlights" vertex="1">
+          <mxGeometry height="100" width="80" x="310" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-8" edge="1" parent="1" source="DaesFxaF3hAM5V-hjiLz-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="DaesFxaF3hAM5V-hjiLz-1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-9" connectable="0" parent="DaesFxaF3hAM5V-hjiLz-8" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Can have" vertex="1">
+          <mxGeometry relative="1" x="-0.0057" y="3" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-11" edge="1" parent="1" source="DaesFxaF3hAM5V-hjiLz-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="DaesFxaF3hAM5V-hjiLz-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-12" connectable="0" parent="DaesFxaF3hAM5V-hjiLz-11" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Can be exported" vertex="1">
+          <mxGeometry relative="1" x="0.0489" y="-4" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-24" edge="1" parent="1" source="DaesFxaF3hAM5V-hjiLz-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="DaesFxaF3hAM5V-hjiLz-23">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-25" connectable="0" parent="DaesFxaF3hAM5V-hjiLz-24" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Can be imported" vertex="1">
+          <mxGeometry relative="1" x="0.0381" y="-2" as="geometry">
+            <mxPoint y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-10" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" value="MyClippings.txt, JSON or similar" vertex="1">
+          <mxGeometry height="100" width="80" x="713" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-13" connectable="0" parent="1" style="group" value="" vertex="1">
+          <mxGeometry height="170" width="420" x="140" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-7" parent="DaesFxaF3hAM5V-hjiLz-13" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="170" width="420" as="geometry" />
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-4" parent="DaesFxaF3hAM5V-hjiLz-13" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" value="EPUB" vertex="1">
+          <mxGeometry height="100" width="80" x="70" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-5" parent="DaesFxaF3hAM5V-hjiLz-13" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" value="PDF" vertex="1">
+          <mxGeometry height="100" width="80" x="190" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-6" parent="DaesFxaF3hAM5V-hjiLz-13" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" value="AZW" vertex="1">
+          <mxGeometry height="100" width="80" x="300" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-14" connectable="0" parent="1" style="group" value="" vertex="1">
+          <mxGeometry height="130" width="270" x="1180" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-15" parent="DaesFxaF3hAM5V-hjiLz-14" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="130" width="270" as="geometry" />
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-16" parent="DaesFxaF3hAM5V-hjiLz-14" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" value="EPUB" vertex="1">
+          <mxGeometry height="76.47058823529412" width="51.42857142857143" x="45" y="22.941176470588236" as="geometry" />
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-17" parent="DaesFxaF3hAM5V-hjiLz-14" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" value="PDF" vertex="1">
+          <mxGeometry height="76.47058823529412" width="51.42857142857143" x="122.14285714285714" y="22.941176470588236" as="geometry" />
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-18" parent="DaesFxaF3hAM5V-hjiLz-14" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" value="AZW" vertex="1">
+          <mxGeometry height="76.47058823529412" width="51.42857142857143" x="192.85714285714286" y="22.941176470588236" as="geometry" />
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-22" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" value="Syncing status" vertex="1">
+          <mxGeometry height="80" width="60" x="970" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-30" edge="1" parent="1" source="DaesFxaF3hAM5V-hjiLz-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="DaesFxaF3hAM5V-hjiLz-22" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="980" y="370" />
+              <mxPoint x="980" y="370" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-31" connectable="0" parent="DaesFxaF3hAM5V-hjiLz-30" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Caches known matches" vertex="1">
+          <mxGeometry relative="1" x="-0.1257" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-37" edge="1" parent="1" source="DaesFxaF3hAM5V-hjiLz-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="DaesFxaF3hAM5V-hjiLz-34">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1070" y="380" />
+              <mxPoint x="1110" y="380" />
+              <mxPoint x="1110" y="460" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-38" connectable="0" parent="DaesFxaF3hAM5V-hjiLz-37" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Pass highlights and locations" vertex="1">
+          <mxGeometry relative="1" x="0.1426" y="3" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-23" parent="1" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" value="Sync/Import plugin" vertex="1">
+          <mxGeometry height="60" width="120" x="950" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-35" edge="1" parent="1" source="DaesFxaF3hAM5V-hjiLz-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="DaesFxaF3hAM5V-hjiLz-15">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-36" connectable="0" parent="DaesFxaF3hAM5V-hjiLz-35" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Text" vertex="1">
+          <mxGeometry relative="1" x="-0.3986" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-27" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" value="Highlight database" vertex="1">
+          <mxGeometry height="80" width="60" x="1370" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-28" edge="1" parent="1" source="DaesFxaF3hAM5V-hjiLz-23" style="endArrow=classic;html=1;rounded=0;" target="DaesFxaF3hAM5V-hjiLz-15" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="930" y="510" as="sourcePoint" />
+            <mxPoint x="980" y="460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-29" connectable="0" parent="DaesFxaF3hAM5V-hjiLz-28" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Compares matches against" vertex="1">
+          <mxGeometry relative="1" x="-0.1223" y="-8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-32" edge="1" parent="1" source="DaesFxaF3hAM5V-hjiLz-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0;entryDx=0;entryDy=52.5;entryPerimeter=0;" target="DaesFxaF3hAM5V-hjiLz-27">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1280" y="460" />
+              <mxPoint x="1280" y="473" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-33" connectable="0" parent="DaesFxaF3hAM5V-hjiLz-32" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Writes to" vertex="1">
+          <mxGeometry relative="1" x="0.4014" y="3" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="DaesFxaF3hAM5V-hjiLz-34" parent="1" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" value="Document management" vertex="1">
+          <mxGeometry height="60" width="120" x="1120" y="430" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

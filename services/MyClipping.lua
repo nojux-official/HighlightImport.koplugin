@@ -34,52 +34,174 @@ end
 -- }
 
 function MyClipping:parseFile(file_path)
+    local file = io.open(file_path, "r")
+    local clippings = {}
+    if file then
+        local content = file:read("*a")
+        file:close()
+        
+        -- Try parsing new format first
+        local new_format_found = self:parseNewFormat(content, clippings)
+        
+        -- If new format not found, parse old format
+        if not new_format_found then
+            file = io.open(file_path, "r")
+            self:parseOldFormat(file, clippings)
+            file:close()
+        end
+    end
+    return clippings
+end
+
+function MyClipping:parseNewFormat(content, clippings)
+    local found = false
+    local current_book = nil
+    local current_chapter = nil
+    
+    -- Split by book entries (separated by blank lines and dividers)
+    for line in content:gmatch("[^\n]+") do
+        -- Skip empty lines and dividers
+        if line:match("^%s*$") or line:match("^%-+$") then
+            goto continue
+        end
+        
+        -- Detect book title (lines without special indentation at start)
+        if not line:match("^　") then
+            current_book = line:match("^%s*(.-)%s*$")
+            if not clippings[current_book] then
+                clippings[current_book] = {
+                    title = current_book,
+                    author = _("Unknown Author"),
+                }
+            end
+            goto continue
+        end
+        
+        -- Detect chapter/section (single 　 prefix)
+        if line:match("^　[^　]") then
+            current_chapter = line:match("^　%s*(.-)%s*$")
+            goto continue
+        end
+        
+        -- Detect page and date line (double 　 prefix with --)
+        if line:match("^　　%-%-") then
+            local page, date_str = line:match("Page:%s*(%d+),%s*added%s+on%s+(.+)")
+            if page and date_str and current_book then
+                -- Next non-empty line will be the text
+                goto continue
+            end
+        end
+        
+        ::continue::
+    end
+    
+    -- Second pass: properly extract entries
+    local lines = {}
+    for line in content:gmatch("[^\n]+") do
+        table.insert(lines, line)
+    end
+    
+    current_book = nil
+    local i = 1
+    while i <= #lines do
+        local line = lines[i]
+        
+        -- Book title
+        if not line:match("^　") and line:match("^%s*(.-)%s*$") ~= "" then
+            current_book = line:match("^%s*(.-)%s*$")
+            if not clippings[current_book] then
+                clippings[current_book] = {
+                    title = current_book,
+                    author = _("Unknown Author"),
+                }
+                found = true
+            end
+        end
+        
+        -- Chapter
+        if line:match("^　[^　]") then
+            current_chapter = line:match("^　%s*(.-)%s*$")
+        end
+        
+        -- Page/Date line
+        if line:match("^　　%-%-") and current_book then
+            local page, date_str = line:match("Page:%s*(%d+),%s*added%s+on%s+(.+)")
+            if page and date_str then
+                -- Look for text in following lines
+                i = i + 1
+                -- Skip empty lines
+                while i <= #lines and lines[i]:match("^%s*$") do
+                    i = i + 1
+                end
+                
+                -- Collect text until separator
+                local text = ""
+                while i <= #lines and not lines[i]:match("^%-=%-") do
+                    text = text .. lines[i] .. "\n"
+                    i = i + 1
+                end
+                
+                text = self:getText(text)
+                if text ~= "" then
+                    local clipping = {
+                        page = page,
+                        sort = "highlight",
+                        time = self:getTime(date_str),
+                        text = text,
+                        chapter = current_chapter,
+                    }
+                    table.insert(clippings[current_book], { clipping })
+                end
+            end
+        end
+        
+        i = i + 1
+    end
+    
+    return found
+end
+
+function MyClipping:parseOldFormat(file, clippings)
+    -- Original My Clippings format parsing
     -- My Clippings format:
     -- Title(Author Name)
     -- Your Highlight on Page 123 | Added on Monday, April 21, 2014 10:08:07 PM
     --
     -- This is a sample highlight.
     -- ==========
-    local file = io.open(file_path, "r")
-    local clippings = {}
-    if file then
-        local index = 1
-        local title, author, info, text
-        for line in file:lines() do
-            line = line:match("^%s*(.-)%s*$") or ""
-            if index == 1 then
-                title, author = self:parseTitleFromPath(line)
-                clippings[title] = clippings[title] or {
-                    title = title,
-                    author = author,
-                }
-            elseif index == 2 then
-                info = self:getInfo(line)
+    local index = 1
+    local title, author, info, text
+    for line in file:lines() do
+        line = line:match("^%s*(.-)%s*$") or ""
+        if index == 1 then
+            title, author = self:parseTitleFromPath(line)
+            clippings[title] = clippings[title] or {
+                title = title,
+                author = author,
+            }
+        elseif index == 2 then
+            info = self:getInfo(line)
             -- elseif index == 3 then
             -- should be a blank line, we skip this line
-            elseif index == 4 then
-                text = self:getText(line)
-            end
-            if line == "==========" then
-                if index == 5 then
-                    -- entry ends normally
-                    local clipping = {
-                        page = info.page or info.location or _("N/A"),
-                        sort = info.sort,
-                        time = info.time,
-                        text = text,
-                    }
-                    -- we cannot extract chapter info so just insert clipping
-                    -- to a place holder chapter
-                    table.insert(clippings[title], { clipping })
-                end
-                index = 0
-            end
-            index = index + 1
+        elseif index == 4 then
+            text = self:getText(line)
         end
-        file:close()
+        if line == "==========" then
+            if index == 5 then
+                local clipping = {
+                    page = info.page or info.location or _("N/A"),
+                    sort = info.sort,
+                    time = info.time,
+                    text = text,
+                }
+                -- we cannot extract chapter info so just insert clipping
+                -- to a place holder chapter
+                table.insert(clippings[title], { clipping })
+            end
+            index = 0
+        end
+        index = index + 1
     end
-    return clippings
 end
 
 local extensions = {
@@ -388,6 +510,24 @@ function MyClipping:parseCurrentDoc()
     }
     self:parseAnnotations(self.ui.annotation.annotations, clippings[title])
     return clippings
+end
+
+function MyClipping:serializeClippings(clippings)
+    if type(clippings) ~= "table" then return end
+    local exportables = {}
+    for _title, booknotes in pairs(clippings) do
+        table.insert(exportables, booknotes)
+    end
+    if #exportables == 0 then
+        UIManager:show(InfoMessage:new{ text = _("No highlights to export") })
+        return
+    end
+    local timestamp = os.time()
+    for i, clipping in ipairs(exportables) do
+        logger.dbg("Clipping " .. i .. ": " .. tostring(clipping))
+    end
+
+    return RapidJSON.encode(exportables, { indent = true })
 end
 
 return MyClipping
