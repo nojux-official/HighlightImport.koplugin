@@ -5,7 +5,6 @@ local logger = require("logger")
 local ITargetStatus = require("interfaces.ITargetStatus")
 
 return function (instance)
-    if(instance.targets ~= nil) then return instance.targets end
 
     instance.targets = {}
 

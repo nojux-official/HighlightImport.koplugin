@@ -7,7 +7,6 @@ local getSettings = require("views.settings.Settings")
 local fileSelector = require("components.fileSelector")
 local Alert = require("components.Alert")
 local Popup = require("components.Popup")
-local StatusPopup = require("components.StatusPopup")
 local useRecreateStatusPopup = require("composables/useRecreateStatusPopup")
 
 

@@ -17,7 +17,7 @@ local StatusPopup = require("components.StatusPopup")
 local HighlightImport = Widget:extend{
     name = "Highlight Import",
     file_path = "/home/studentas/projects/HighlightImport.koplugin/stuff/clippings.txt",
-    
+    targets = {},
 }
 
 function HighlightImport:init()
@@ -48,13 +48,6 @@ function HighlightImport:addToMainMenu(menu_items)
         sub_item_table = getMenu(self)
     }
 end
-
-
-
-
-
-
-
 
 
 return HighlightImport
