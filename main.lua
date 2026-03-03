@@ -17,7 +17,8 @@ local FileSelector = require("components.fileSelector")
 
 local HighlightImport = Widget:extend{
     name = "Highlight Import",
-    file_path = ""
+    file_path = "",
+    targets = {},
     
 }
 
