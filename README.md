@@ -89,17 +89,14 @@ The plugin should work on any platform that supports KOReader, including:
 
 1. Open the **Highlight Import** menu again (from Typesetting menu)
 2. Tap **>Import<** (the second menu item - the button text changes to show it's ready)
-3. Wait for the import to complete
-   - Import time depends on:
-     - Number of highlights
-     - Device performance
-     - Book complexity
+3. You can select which highlights to import in the next screen, or just tap "Import All"
    
-![Import in progress](screenshots/import.png)
+![Imports view](screenshots/import.png)
 
-4. Check the notification for import results
-   - Shows number of successful imports
-   - Shows number of failed matches
+4. Wait for the import process to complete
+   - This may take a few seconds depending on the number of highlights and book size
+
+![Status popup](screenshots/status.png)
 
 ### Step 6: View Your Highlights
 
@@ -123,10 +120,6 @@ The plugin should work on any platform that supports KOReader, including:
 1. **Check file format**: Ensure you're using Kindle's "My Clippings.txt" format
 2. **Preload content**: Scroll through the entire book before importing
 3. **Check logs**: Look for error messages in KOReader's logs
-
-### Import fails partway through
-
-1. This is known. Since it is alpha version, only exact matches on the book are imported.
 
 ## File Format
 
@@ -171,7 +164,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Support
 
 - **Issues**: [GitHub Issues](https://github.com/nojux-official/HighlightImport.koplugin/issues)
-
-## Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for version history and changes.
