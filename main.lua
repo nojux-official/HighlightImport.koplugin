@@ -3,10 +3,11 @@ local _ = require("gettext")
 local logger = require("logger")
 local MyClipping = require("services.MyClipping")
 local Import = require("services.LocalMatching")
+local DB = require("services.Db")
 
 local getMenu = require("views/Menu")
 local UIManager = require("ui/uimanager")
-local ReaderUI = require("apps/reader/readerui")  
+local ReaderUI = require("apps/reader/readerui")
 
 local AnnotationsView = require("views.annotations.Annotations")
 local AnnotationView = require("views.annotations.Annotation")
@@ -16,24 +17,35 @@ local StatusPopup = require("components.StatusPopup")
 
 local HighlightImport = Widget:extend{
     name = "Highlight Import",
-    file_path = "/home/studentas/projects/HighlightImport.koplugin/stuff/clippings.txt",
+    file_path = "/home/studentas/projects/HighlightImport.koplugin/stuff/clippingsAll.txt",
     targets = {},
+    db = nil
 }
 
 function HighlightImport:init()
     self.parser = MyClipping:new{ ui = self.ui }
+    self.db = DB:new{}
+    self.db:init()
 end
 
 function HighlightImport:onReaderReady()
 
     self.ui.menu:registerToMainMenu(self)
 
+
+    self.db:postCollection("annotation", {
+        highlight = "highlight1",
+        note = "note1",
+        pos1 = "pos1",
+        pos2 = "pos2"
+    })
+
+
     UIManager:nextTick(function()
         -- AnnotationsView(self)
         -- AnnotationView(self)    
-        ImportsView(self)
+        -- ImportsView(self)
         -- StatusPopup()
-
 
     end)
 
