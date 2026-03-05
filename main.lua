@@ -26,21 +26,15 @@ local HighlightImport = Widget:extend{
 function HighlightImport:init()
     self.parser = MyClipping:new{ ui = self.ui }
     self.db = DB:new{}
-    self.targets = TargetStore:new{ }
+    self.targets = TargetStore:new{ db = self.db, parser = self.parser }
 end
 
 function HighlightImport:onReaderReady()
 
     self.ui.menu:registerToMainMenu(self)
 
-
-    self.db:postCollection("annotation", {
-        highlight = "highlight1",
-        note = "note1",
-        pos1 = "pos1",
-        pos2 = "pos2"
-    })
-
+    -- self.targets:loadFromClippings(self.file_path)
+    self.targets:commit()
 
     UIManager:nextTick(function()
         -- AnnotationsView(self)
