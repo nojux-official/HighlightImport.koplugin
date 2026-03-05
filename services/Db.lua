@@ -8,6 +8,7 @@ local DB_SCHEMA_VERSION = 20260304
 local DB_SCHEMA = [[
     CREATE TABLE IF NOT EXISTS "annotation" (
         "id"            INTEGER NOT NULL UNIQUE,
+        "status"        INTEGER NOT NULL,
         "highlight"     TEXT NOT NULL,
         "note"          TEXT,
         "pos1"          TEXT,

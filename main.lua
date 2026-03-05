@@ -4,6 +4,7 @@ local logger = require("logger")
 local MyClipping = require("services.MyClipping")
 local Import = require("services.LocalMatching")
 local DB = require("services.Db")
+local TargetStore = require("stores.TargetStore")
 
 local getMenu = require("views/Menu")
 local UIManager = require("ui/uimanager")
@@ -25,7 +26,7 @@ local HighlightImport = Widget:extend{
 function HighlightImport:init()
     self.parser = MyClipping:new{ ui = self.ui }
     self.db = DB:new{}
-    self.db:init()
+    self.targets = TargetStore:new{ }
 end
 
 function HighlightImport:onReaderReady()
