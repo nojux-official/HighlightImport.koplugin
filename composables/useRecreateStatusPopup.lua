@@ -15,7 +15,7 @@ function calculateStats (ctx)
             ctx.remaining = ctx.remaining + 1 
             ctx.total = ctx.total + 1
         end
-        if target.status == ITargetStatus.ALGORITHM_RESOLVED then
+        if target.status == ITargetStatus.RESOLVED then
             ctx.succeeded = ctx.succeeded + 1
             ctx.total = ctx.total + 1
         end

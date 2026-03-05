@@ -69,7 +69,7 @@ return function (instance)
         
         doc:CreateHighlightFromXPointer(xpointer_start, xpointer_end, target.annotation)
 
-        instance.targets[idx].status = ITargetStatus.ALGORITHM_RESOLVED
+        instance.targets[idx].status = ITargetStatus.RESOLVED
 
         ::continueInner::
     end

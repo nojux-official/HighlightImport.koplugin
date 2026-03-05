@@ -4,38 +4,38 @@ local logger = require("logger")
 
 local db_path = DataStorage:getSettingsDir() .. "/highlight_import.sqlite3"
 
-local DB_SCHEMA_VERSION = 20260304
+local DB_SCHEMA_VERSION = 20260305
 local DB_SCHEMA = [[
     CREATE TABLE IF NOT EXISTS "annotation" (
         "id"            INTEGER NOT NULL UNIQUE,
+        "book_id"       INTERGER,
         "status"        INTEGER NOT NULL,
         "highlight"     TEXT NOT NULL,
         "note"          TEXT,
         "pos1"          TEXT,
         "pos2"          TEXT,
+        "updated_at"    DATETIME DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY("id")
     );
     CREATE TABLE IF NOT EXISTS "annotation_status" (
         "id"            INTEGER NOT NULL UNIQUE,
-        "status"          TEXT UNIQUE,
+        "status"        TEXT NOT NULL,
         PRIMARY KEY("id")
     );
-    INSERT OR IGNORE INTO "annotation_status" (id, status) VALUES (1, 'added'),
-        (2, 'selected'), (3, 'algorithm_resolved'), (4, 'skipped'), (5, 'failed'),
-        (6, 'ai_resolved'), (7, 'user_resolved'
-    );
+    INSERT OR IGNORE INTO "annotation_status" (id, status) VALUES 
+        (1, 'added'),
+        (2, 'selected'),
+        (3, 'resolved'),
+        (4, 'failed'),
+        (5, 'skipped'),
+        (6, 'deleted')
+    ;
     CREATE TABLE IF NOT EXISTS "book" (
-        "id"           TEXT NOT NULL UNIQUE,
-        "title"         TEXT,
-        "path"          TEXT,
+        "id"              TEXT NOT NULL UNIQUE,
+        "path"            TEXT,
         "clippings_path"  TEXT,
+        "updated_at"      DATETIME DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY("id")
-    );
-    CREATE TABLE IF NOT EXISTS "target" (
-        "annotation_id"           TEXT NOT NULL UNIQUE,
-        "book_id"         TEXT,
-        "status"        INTEGER,
-        PRIMARY KEY("annotation_id")
     );
 ]]
 
