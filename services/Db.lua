@@ -97,15 +97,34 @@ function DB:postCollection(collection_name, data)
     
     local stmt = self.db:prepare(sql)
     
-    -- Collect values in the same order as keys
     local values = {}
     for _, key in ipairs(keys) do
         table.insert(values, data[key])
     end
     
-    -- Bind all values at once
     stmt:bind(unpack(values))
     stmt:step()
+end
+
+function DB:isExists(collection_name, conditions)
+    local keys = self:keys(conditions)
+    local where_clause = table.concat(self:map(keys, function(k) return k .. " = ?" end), " AND ")
+    local sql = "SELECT COUNT(*) as count FROM " .. collection_name .. " WHERE " .. where_clause
+    
+    local stmt = self.db:prepare(sql)
+    
+    local values = {}
+    for _, key in ipairs(keys) do
+        table.insert(values, conditions[key])
+    end
+    
+    stmt:bind(unpack(values))
+    
+    if stmt:step() == SQ3.ROW then
+        return stmt:get_value(0) > 0
+    end
+    
+    return false
 end
 
 return DB

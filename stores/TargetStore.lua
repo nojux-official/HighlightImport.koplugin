@@ -46,7 +46,9 @@ end
 
 function TargetStore:commit()
     for idx, annotation in ipairs(self.data) do
-        self.db:postCollection("annotation", annotation)
+        if not self.db:isExists("annotation", { highlight = annotation.highlight }) then
+            self.db:postCollection("annotation", annotation)
+        end
     end
 
 end
