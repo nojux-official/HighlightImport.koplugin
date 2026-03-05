@@ -33,7 +33,7 @@ function HighlightImport:onReaderReady()
 
     self.ui.menu:registerToMainMenu(self)
 
-    -- self.targets:loadFromClippings(self.file_path)
+    self.targets:loadFromClippings(self.file_path)
     self.targets:commit()
 
     UIManager:nextTick(function()

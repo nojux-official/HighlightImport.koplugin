@@ -1,9 +1,9 @@
 return {
-    ADDED = "added",
-    SELECTED = "selected",
-    ALGORITHM_RESOLVED = "algorithm_resolved",
-    SKIPPED = "skipped",
-    FAILED = "failed",
-    AI_RESOLVED = "ai_resolved",
-    USER_RESOLVED = "user_resolved"
+    ADDED = 1,
+    SELECTED = 2,
+    ALGORITHM_RESOLVED = 3,
+    SKIPPED = 4,
+    FAILED = 5,
+    AI_RESOLVED = 6,
+    USER_RESOLVED = 7
 }

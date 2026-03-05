@@ -45,16 +45,9 @@ end
 -- end
 
 function TargetStore:commit()
-    -- for idx, value in ipairs(self.targets) do
-    
-    self.db:postCollection("annotation", {
-        highlight = "higlight",
-        status = "1",
-        note = "note1",
-        pos1 = "pos1",
-        pos2 = "pos2"
-    })
-    -- }
+    for idx, annotation in ipairs(self.data) do
+        self.db:postCollection("annotation", annotation)
+    end
 
 end
 
