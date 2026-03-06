@@ -1,9 +1,6 @@
 local _ = require("gettext")
 local logger = require("logger")
-local UIManager = require("ui/uimanager")
 local Alert = require("components.Alert")
-
-local useRecreateStatusPopup = require("composables.useRecreateStatusPopup")
 
 return function(instance)
     --[=====[
@@ -20,7 +17,7 @@ return function(instance)
         error("No ReaderUI instance running")
     end
 
-    local search = instance.ui.search
+    local document = instance.ui.document
     local annotation_module = instance.ui.annotation
 
     if not annotation_module or not annotation_module.annotations then
@@ -31,11 +28,6 @@ return function(instance)
     local annotations = annotation_module.annotations
 
     logger.dbg(string.format("HighlightImport: Processing %d annotations for realignment.", #annotations))
-
-    local ctx = {}
-    ctx.file_path = instance.file_path or "Current Document"
-    ctx.targets = {}
-    ctx.finished = false
 
     local realigned_count = 0
     local skipped_count = 0
@@ -57,8 +49,8 @@ return function(instance)
 
         logger.dbg("HighlightImport: Processing annotation: " .. annotation.text:sub(1, 50) .. "...")
 
-        -- direction=0, no regex, case_insensitive
-        local res = search:searchFromCurrent(annotation.text, 0, false, true)
+        -- Use findAllText: pattern, case_insensitive, nb_context_words, max_hits, regex
+        local res = document:findAllText(annotation.text, true, 0, 1, false)
 
         if not res or #res == 0 then
             logger.dbg("HighlightImport: Failed to find match for annotation: " .. annotation.text:sub(1, 50))
@@ -76,20 +68,6 @@ return function(instance)
         annotation.page = new_pos0 -- page field also uses pos0 for rolling documents
 
         realigned_count = realigned_count + 1
-
-        if (idx % 5 == 0) or (idx == #annotations) then
-            ctx.targets = {
-                { status = "info", annotation = string.format("Processed: %d/%d", idx, #annotations) },
-                { status = "info", annotation = string.format("Realigned: %d", realigned_count) },
-                { status = "info", annotation = string.format("Failed: %d", failed_count) },
-                { status = "info", annotation = string.format("Skipped: %d", skipped_count) },
-            }
-            if idx == #annotations then
-                ctx.finished = true
-            end
-            useRecreateStatusPopup(ctx)
-            UIManager:forceRePaint()
-        end
 
         ::continueInner::
     end
