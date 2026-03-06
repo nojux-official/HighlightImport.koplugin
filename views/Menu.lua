@@ -8,6 +8,7 @@ local fileSelector = require("components.fileSelector")
 local Alert = require("components.Alert")
 local Popup = require("components.Popup")
 local useRecreateStatusPopup = require("composables/useRecreateStatusPopup")
+local RealignBookmarks = require("utils.RealignBookmarks")
 
 
 function GetMenu(instance)
@@ -44,6 +45,12 @@ function GetMenu(instance)
             text = _("Browse file highlights"),
             callback = function()
                 AnnotationsView(instance)
+            end
+        },
+        {
+            text = _("Realign bookmarks"),
+            callback = function()
+                RealignBookmarks(instance)
             end
         },
         {
