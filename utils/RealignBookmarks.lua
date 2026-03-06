@@ -1,6 +1,7 @@
 local _ = require("gettext")
 local logger = require("logger")
 local UIManager = require("ui/uimanager")
+local Alert = require("components.Alert")
 
 local useRecreateStatusPopup = require("composables.useRecreateStatusPopup")
 
@@ -103,6 +104,11 @@ return function(instance)
 
     logger.dbg(string.format(
         "HighlightImport: Realign finished. Realigned: %d, Failed: %d, Skipped: %d",
+        realigned_count, failed_count, skipped_count
+    ))
+
+    Alert(string.format(
+        "Realignment complete! Please reopen your document!\n\nRealigned: %d\nFailed: %d\nSkipped: %d",
         realigned_count, failed_count, skipped_count
     ))
 
