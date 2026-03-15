@@ -47,6 +47,12 @@ return function(instance)
             goto continueInner
         end
 
+        if #annotation.text > 200 then
+            logger.dbg("HighlightImport: Skipping long annotation (length: " .. #annotation.text .. ")")
+            skipped_count = skipped_count + 1
+            goto continueInner
+        end
+
         logger.dbg("HighlightImport: Processing annotation: " .. annotation.text:sub(1, 50) .. "...")
 
         -- Use findAllText: pattern, case_insensitive, nb_context_words, max_hits, regex
@@ -74,10 +80,32 @@ return function(instance)
 
     -- Sort annotations after position changes
     if realigned_count > 0 then
-        annotation_module:sortItems(annotations)
-        -- Mark document as modified so changes will be saved
-        instance.ui.doc_settings:saveSetting("annotations", annotations)
-        logger.dbg("HighlightImport: Annotations saved after realignment.")
+        -- Filter out annotations with invalid positions before sorting
+        local valid_annotations = {}
+        for _, ann in ipairs(annotations) do
+            if ann.pos0 and ann.pos1 and type(ann.pos0) ~= "table" and type(ann.pos1) ~= "table" then
+                table.insert(valid_annotations, ann)
+            else
+                logger.warn("HighlightImport: Filtering out annotation with invalid position data")
+            end
+        end
+
+        -- If we have valid annotations, sort and save them
+        if #valid_annotations > 0 then
+            local success, err = pcall(function()
+                annotation_module:sortItems(valid_annotations)
+            end)
+            
+            if not success then
+                logger.warn("HighlightImport: Sorting failed, keeping annotations unsorted: " .. tostring(err))
+            end
+            
+            annotation_module.annotations = valid_annotations
+            instance.ui.doc_settings:saveSetting("annotations", valid_annotations)
+            logger.dbg("HighlightImport: Annotations saved after realignment.")
+        else
+            logger.warn("HighlightImport: No valid annotations to save after filtering")
+        end
     end
 
     logger.dbg(string.format(
