@@ -24,6 +24,8 @@ local HighlightImport = Widget:extend{
 
 function HighlightImport:init()
     self.parser = MyClipping:new{ ui = self.ui }
+    self.file_path = G_reader_settings:readSetting("highlight_import_file_path") or ""
+    self.last_path = G_reader_settings:readSetting("highlight_import_last_path") or ""
 end
 
 function HighlightImport:onReaderReady()

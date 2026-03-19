@@ -33,135 +33,104 @@ end
 --      }
 -- }
 
-function MyClipping:parseFile(file_path)
+-- Normalize a title for matching: lowercase, strip trailing (...) and " - ..."
+local function bare(s)
+    s = (s or ""):lower():match("^%s*(.-)%s*$")
+    s = s:gsub("%s*%b()%s*$", "")
+    s = s:gsub("%s*%-%s*.+$", "")
+    s = s:match("^%s*(.-)%s*$")
+    s = s:gsub("[:%_]", " ")
+    s = s:gsub("%s+", " "):match("^%s*(.-)%s*$")
+    return s
+end
+
+function MyClipping:parseFile(file_path, book_filter)
     local file = io.open(file_path, "r")
     local clippings = {}
     if file then
         local content = file:read("*a")
         file:close()
-        
-        -- Try parsing new format first
-        local new_format_found = self:parseNewFormat(content, clippings)
-        
-        -- If new format not found, parse old format
-        if not new_format_found then
-            file = io.open(file_path, "r")
-            self:parseOldFormat(file, clippings)
-            file:close()
+        if not self:parseNewFormat(content, clippings, book_filter) then
+            self:parseOldFormat(content, clippings, book_filter)
         end
+        content = nil  -- allow GC of the large string
     end
     return clippings
 end
 
-function MyClipping:parseNewFormat(content, clippings)
+function MyClipping:parseNewFormat(content, clippings, book_filter)
+    -- New format uses CJK full-width spaces (　) for indentation.
+    -- Bail out immediately for old-format files to avoid building a lines array.
+    if not content:find("　") then
+        return false
+    end
+
     local found = false
     local current_book = nil
     local current_chapter = nil
-    
-    -- Split by book entries (separated by blank lines and dividers)
-    for line in content:gmatch("[^\n]+") do
-        -- Skip empty lines and dividers
-        if line:match("^%s*$") or line:match("^%-+$") then
-            goto continue
-        end
-        
-        -- Detect book title (lines without special indentation at start)
-        if not line:match("^　") then
-            current_book = line:match("^%s*(.-)%s*$")
-            if not clippings[current_book] then
-                clippings[current_book] = {
-                    title = current_book,
-                    author = _("Unknown Author"),
-                }
-            end
-            goto continue
-        end
-        
-        -- Detect chapter/section (single 　 prefix)
-        if line:match("^　[^　]") then
-            current_chapter = line:match("^　%s*(.-)%s*$")
-            goto continue
-        end
-        
-        -- Detect page and date line (double 　 prefix with --)
-        if line:match("^　　%-%-") then
-            local page, date_str = line:match("Page:%s*(%d+),%s*added%s+on%s+(.+)")
-            if page and date_str and current_book then
-                -- Next non-empty line will be the text
-                goto continue
-            end
-        end
-        
-        ::continue::
-    end
-    
-    -- Second pass: properly extract entries
+    local skip_book = false
+
     local lines = {}
     for line in content:gmatch("[^\n]+") do
-        table.insert(lines, line)
+        lines[#lines + 1] = line
     end
-    
-    current_book = nil
+
     local i = 1
     while i <= #lines do
         local line = lines[i]
-        
-        -- Book title
+
+        -- Book title: no CJK full-width space indent
         if not line:match("^　") and line:match("^%s*(.-)%s*$") ~= "" then
             current_book = line:match("^%s*(.-)%s*$")
-            if not clippings[current_book] then
+            skip_book = book_filter and book_filter ~= "" and bare(current_book) ~= book_filter
+            if not skip_book and not clippings[current_book] then
                 clippings[current_book] = {
                     title = current_book,
                     author = _("Unknown Author"),
                 }
-                found = true
+                -- don't set found=true here: old-format files also have un-indented titles
             end
         end
-        
-        -- Chapter
+
+        -- Chapter: single 　 prefix
         if line:match("^　[^　]") then
             current_chapter = line:match("^　%s*(.-)%s*$")
         end
-        
-        -- Page/Date line
+
+        -- Page/Date line: double 　 prefix with --
         if line:match("^　　%-%-") and current_book then
             local page, date_str = line:match("Page:%s*(%d+),%s*added%s+on%s+(.+)")
             if page and date_str then
-                -- Look for text in following lines
                 i = i + 1
-                -- Skip empty lines
                 while i <= #lines and lines[i]:match("^%s*$") do
                     i = i + 1
                 end
-                
-                -- Collect text until separator
                 local text = ""
                 while i <= #lines and not lines[i]:match("^%-=%-") do
                     text = text .. lines[i] .. "\n"
                     i = i + 1
                 end
-                
                 text = self:getText(text)
-                if text ~= "" then
-                    local clipping = {
+                if text ~= "" and not skip_book then
+                    table.insert(clippings[current_book], { {
                         page = page,
                         sort = "highlight",
                         time = self:getTime(date_str),
                         text = text,
                         chapter = current_chapter,
-                    }
-                    table.insert(clippings[current_book], { clipping })
+                    } })
+                    found = true  -- CJK format confirmed: a real entry was parsed
                 end
             end
         end
-        
+
         i = i + 1
     end
-    
+
     return found
 end
 
-function MyClipping:parseOldFormat(file, clippings)
+function MyClipping:parseOldFormat(content, clippings, book_filter)
     -- Original My Clippings format parsing
     -- My Clippings format:
     -- Title(Author Name)
@@ -170,24 +139,29 @@ function MyClipping:parseOldFormat(file, clippings)
     -- This is a sample highlight.
     -- ==========
     local index = 1
-    local title, author, info, text
-    for line in file:lines() do
+    local title, author, info, text, skip_book
+    for line in (content .. "\n"):gmatch("([^\n]*)\n") do
         line = line:match("^%s*(.-)%s*$") or ""
         if index == 1 then
             title, author = self:parseTitleFromPath(line)
-            clippings[title] = clippings[title] or {
-                title = title,
-                author = author,
-            }
-        elseif index == 2 then
-            info = self:getInfo(line)
-            -- elseif index == 3 then
-            -- should be a blank line, we skip this line
-        elseif index == 4 then
-            text = self:getText(line)
+            -- Skip books that don't match the filter — never allocate their strings
+            skip_book = book_filter and book_filter ~= "" and bare(title) ~= book_filter
+            if not skip_book then
+                clippings[title] = clippings[title] or {
+                    title = title,
+                    author = author,
+                }
+            end
+        elseif not skip_book then
+            if index == 2 then
+                info = self:getInfo(line)
+                -- index == 3 is a blank line, skipped
+            elseif index == 4 then
+                text = self:getText(line)
+            end
         end
         if line == "==========" then
-            if index == 5 then
+            if index == 5 and not skip_book then
                 local clipping = {
                     page = info.page or info.location or _("N/A"),
                     sort = info.sort,
@@ -333,6 +307,8 @@ end
 
 function MyClipping:getText(line)
     line = line or ""
+    -- Replace non-breaking space (U+00A0) which Lua's %s won't strip
+    line = line:gsub("\xc2\xa0", " ")
     return line:match("^%s*(.-)%s*$") or ""
 end
 

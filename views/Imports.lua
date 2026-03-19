@@ -53,6 +53,20 @@ function ImportsView(instance)
 
     instance.targets = ParseClippings(instance)
 
+    -- No targets found — but we have a list of books from the clippings file.
+    -- Show a picker so the user can select the right book manually.
+    if #instance.targets == 0
+        and instance.available_books
+        and #instance.available_books > 0 then
+        local bookSelector = require("components.bookSelector")
+        bookSelector(instance, function()
+            -- Re-open the import view after the user picks a book.
+            UIManager:nextTick(function()
+                ImportsView(instance)
+            end)
+        end)
+        return
+    end
 
     local function recreate(page)
         if not page then page = 1 end

@@ -34,19 +34,15 @@ function Document:GetLastProgress()
     end
 end
 
-function Document:CreateHighlightFromXPointer(start_xp, end_xp, text)
+function Document:CreateHighlightFromXPointer(start_xp, end_xp, text, note_text)
     self.instance.ui.highlight.selected_text = {
         text = text,
         pos0 = start_xp,
         pos1 = end_xp,
-        -- For rolling (EPUB/etc)
-        -- sboxes = self.document:getScreenBoxesFromPositions(start_xp, end_xp)
+        note = note_text or nil,
     }
-    
     local index = self.instance.ui.highlight:saveHighlight(true)
-    
     self.instance.ui.highlight:clear()
-    
     return index
 end
 
@@ -56,25 +52,7 @@ function Document:LoadNativeHighlights()
     if not self:IsDocReady() then return end
     self.instance.ui.annotation:updatePageNumbers(true)
     local clippings = self.instance.parser:parseCurrentDoc()
-    self:SerializeClippings(clippings)
-end
-
-function Document:SerializeClippings(clippings)
-    if type(clippings) ~= "table" then return end
-    local exportables = {}
-    for _title, booknotes in pairs(clippings) do
-        table.insert(exportables, booknotes)
-    end
-    if #exportables == 0 then
-        UIManager:show(InfoMessage:new{ text = _("No highlights to export") })
-        return
-    end
-    local timestamp = os.time()
-    for i, clipping in ipairs(exportables) do
-        logger.dbg("Clipping " .. i .. ": " .. tostring(clipping))
-    end
-
-    return RapidJSON.encode(exportables, { indent = true })
+    self.instance.parser:serializeClippings(clippings)
 end
 
 return Document
