@@ -3,7 +3,7 @@ local logger = require("logger")
 
 local ITargetStatus = require("interfaces.ITargetStatus")
 local ParseClippings = require("utils.ParseClippings")
-local Import = require("services.LocalMatching")
+local MatchingStrategies = require("services.MatchingStrategies")
 
 local UIManager = require("ui/uimanager")
 local ButtonTable = require("ui/widget/buttontable")
@@ -51,24 +51,14 @@ end
 
 function ImportsView(instance)
 
-    instance.targets = ParseClippings(instance)
-
-    -- No targets found — but we have a list of books from the clippings file.
-    -- Show a picker so the user can select the right book manually.
-    if #instance.targets == 0
-        and instance.available_books
-        and #instance.available_books > 0 then
-        local bookSelector = require("components.bookSelector")
-        bookSelector(instance, function()
-            -- Re-open the import view after the user picks a book.
-            UIManager:nextTick(function()
-                ImportsView(instance)
-            end)
-        end)
-        return
-    end
-
     local function recreate(page)
+        instance.targets = ParseClippings(instance)
+
+        local matchingStrategy = MatchingStrategies:new{ instance = instance }
+        local strategyName = G_reader_settings:readSetting(("highlight_import_matching_algorithm"), "fuzzy")
+        matchingStrategy:selectByName(strategyName)
+
+
         if not page then page = 1 end
         local ctx = {}
         
@@ -82,13 +72,13 @@ function ImportsView(instance)
                     useCloseButton(ctx)
                     
                     UIManager:nextTick(function()
-                        Import(instance)
+                        matchingStrategy:execute()
                     end)
                 end},
                 {text="Import selected", callback=function()
                     useCloseButton(ctx);
                     UIManager:nextTick(function()
-                        Import(instance)
+                        matchingStrategy:execute()
                     end)
                   end},
                 {text="Toggle browsing", callback=function() useCloseButton(ctx); AnnotationsView(instance) end},
