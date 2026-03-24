@@ -5,10 +5,10 @@ local adaptiveSearch = require("services.MatchingStrategies.adaptive")
 MatchingStrategies= {
     strategies = {
         exact_legacy = exactLegacy,
-        adaptive = fuzzy,
+        adaptive = adaptiveSearch,
     },
     strategy = exactLegacy,
-    instance = adaptiveSearch,
+    instance = nil,
 }
 
 function MatchingStrategies:new(o)
