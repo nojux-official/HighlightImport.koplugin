@@ -41,6 +41,11 @@ return function (instance)
     for idx, target in ipairs(instance.targets) do
         if target.status ~= ITargetStatus.SELECTED then goto continueInner end
 
+        if (idx % 3 == 0) then
+            useRecreateStatusPopup(ctx)
+            UIManager:forceRePaint()
+        end
+
         local serialized = RapidJSON.encode(target.annotation, { indent = true })
         logger.dbg("Entry: " .. tostring(serialized))
 
@@ -55,20 +60,24 @@ return function (instance)
         end
         local xpointer_start = res[1].start
         local xpointer_end = res[1]["end"]
+        if xpointer_end == nil then 
+            logger.dbg("HighlightImport: Failed to find end pointer for: " .. target.annotation)
+            instance.targets[idx].status = ITargetStatus.FAILED
+            goto continueInner
+        end
         logger.dbg("HighlightImport: Found text at: " .. xpointer_start .. " to " .. xpointer_end)
         
         doc:CreateHighlightFromXPointer(xpointer_start, xpointer_end, target.annotation)
 
         instance.targets[idx].status = ITargetStatus.ALGORITHM_RESOLVED
 
-        if (idx % 3 == 0) or (idx == #instance.targets) then
-            if (idx == #instance.targets) then ctx.finished = true end
-            useRecreateStatusPopup(ctx)
-            UIManager:forceRePaint()
-        end
-
         ::continueInner::
     end
+    
+    ctx.finished = true
+    useRecreateStatusPopup(ctx)
+    UIManager:forceRePaint()
+    
     logger.dbg("HighlightImport: algorithm finished.")
 
 end

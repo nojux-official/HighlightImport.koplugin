@@ -83,6 +83,11 @@ return function (instance)
     for idx, target in ipairs(instance.targets) do
         if target.status ~= ITargetStatus.SELECTED then goto continue end
 
+        if (idx % 3 == 0) or (idx == #instance.targets) then
+            useRecreateStatusPopup(ctx)
+            UIManager:forceRePaint()
+        end
+
         -- Skip if this highlight already exists in the document
         if existing[target.annotation] then
             log(string.format("[SKIP existing] %s", target.annotation))
@@ -192,11 +197,7 @@ return function (instance)
         doc:CreateHighlightFromXPointer(xpointer_start, xpointer_end, target.annotation, target.note)
         instance.targets[idx].status = ITargetStatus.ALGORITHM_RESOLVED
 
-        if (idx % 20 == 0) or (idx == #instance.targets) then
-            if idx == #instance.targets then ctx.finished = true end
-            useRecreateStatusPopup(ctx)
-            UIManager:forceRePaint()
-        end
+        
 
         ::continue::
     end
