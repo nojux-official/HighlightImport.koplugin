@@ -50,15 +50,13 @@ function buildItemList(targets, ctx)
 end
 
 function ImportsView(instance)
+    instance.targets = ParseClippings(instance)
+    
+    local matchingStrategy = MatchingStrategies:new{ instance = instance }
+    local strategyName = G_reader_settings:readSetting(("highlight_import_matching_algorithm"), "fuzzy")
+    matchingStrategy:selectByName(strategyName)
 
     local function recreate(page)
-        instance.targets = ParseClippings(instance)
-
-        local matchingStrategy = MatchingStrategies:new{ instance = instance }
-        local strategyName = G_reader_settings:readSetting(("highlight_import_matching_algorithm"), "fuzzy")
-        matchingStrategy:selectByName(strategyName)
-
-
         if not page then page = 1 end
         local ctx = {}
         
