@@ -35,14 +35,27 @@ function Document:GetLastProgress()
 end
 
 function Document:CreateHighlightFromXPointer(start_xp, end_xp, text, note_text)
-    self.instance.ui.highlight.selected_text = {
+    local ui = self.instance.ui
+    
+    local annotation_item = {
         text = text,
+        note = note_text and note_text ~= "" and note_text or nil,
         pos0 = start_xp,
         pos1 = end_xp,
-        note = note_text or nil,
+        page = start_xp,  -- xPointer for EPUB rolling view
+        drawer = "highlight",
+        color = "yellow",      -- Default highlight color
     }
-    local index = self.instance.ui.highlight:saveHighlight(true)
-    self.instance.ui.highlight:clear()
+    
+    -- Add to the annotation store directly
+    -- addItem automatically:
+    -- - Sets datetime if not provided
+    -- - Computes pageno and pageref from xPointer
+    -- - Triggers AnnotationsModified event
+    local index = ui.annotation:addItem(annotation_item)
+    
+    ui.annotation:onSaveSettings()
+    
     return index
 end
 
