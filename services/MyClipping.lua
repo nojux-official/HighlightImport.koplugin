@@ -44,6 +44,11 @@ local function bare(s)
     return s
 end
 
+-- Exposed for external callers that need to normalize a title the same way
+function MyClipping:bareTitle(s)
+    return bare(s)
+end
+
 function MyClipping:parseFile(file_path, book_filter)
     local file = io.open(file_path, "r")
     local clippings = {}

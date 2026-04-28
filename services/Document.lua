@@ -39,7 +39,7 @@ function Document:CreateHighlightFromXPointer(start_xp, end_xp, text, note_text)
     
     local annotation_item = {
         text = text,
-        note = note_text and note_text ~= "" and note_text or nil,
+        note = note_text and note_text ~= "" and note_text ~= text and note_text or nil,
         pos0 = start_xp,
         pos1 = end_xp,
         page = start_xp,  -- xPointer for EPUB rolling view

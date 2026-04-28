@@ -4,14 +4,54 @@ local logger = require("logger")
 
 local ITargetStatus = require("interfaces.ITargetStatus")
 
+-- Return the first clippings title whose bare form matches bare_current,
+-- either exactly or as a substring of the other (handles subtitle variants).
+local function findBestTitle(clippings, bare_current, parser)
+    for title in pairs(clippings) do
+        local bt = parser:bareTitle(title)
+        if bt == bare_current then return title end
+        if bt ~= "" and (bt:find(bare_current, 1, true) or bare_current:find(bt, 1, true)) then
+            return title
+        end
+    end
+    return nil
+end
+
 return function (instance)
 
     instance.targets = {}
 
-    local clippings = instance.parser:parseFile(instance.file_path)
+    -- Determine the current book title for filtering
+    local bare_current = ""
+    if instance.ui and instance.ui.doc_props then
+        local title, _ = instance.parser:getTitleAuthor(
+            instance.ui.document.file, instance.ui.doc_props)
+        bare_current = instance.parser:bareTitle(title or "")
+    end
+
+    -- Parse file: pass the bare title so MyClipping skips non-matching books.
+    -- Falls back to no filter (parse all) when title is unknown.
+    local clippings = instance.parser:parseFile(instance.file_path, bare_current)
 
     if type(clippings) ~= "table" then return end
-    
+
+    -- If the exact/bare filter matched nothing, try fuzzy matching.
+    if next(clippings) == nil and bare_current ~= "" then
+        logger.dbg("HighlightImport: No exact title match, attempting fuzzy search")
+        local all_clippings = instance.parser:parseFile(instance.file_path, "")
+        local matched = findBestTitle(all_clippings, bare_current, instance.parser)
+        if matched then
+            logger.dbg("HighlightImport: Fuzzy match → " .. matched)
+            -- Discard non-matching books in-place to free their memory
+            for k in pairs(all_clippings) do
+                if k ~= matched then all_clippings[k] = nil end
+            end
+        else
+            logger.dbg("HighlightImport: No fuzzy match found, using all clippings")
+        end
+        clippings = all_clippings
+    end
+
     -- Collect all highlights and notes with their metadata
     local all_items = {}
     for title, booknotes in pairs(clippings) do

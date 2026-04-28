@@ -64,10 +64,15 @@ return function (instance)
         return s
     end
 
+    instance.cancel_import = false
+
     local ctx = {
         file_path = instance.file_path,
         targets = instance.targets,
         finished = false,
+        cancelFunc = function()
+            instance.cancel_import = true
+        end,
     }
     ctx.popup = useRecreateStatusPopup(ctx)
 
@@ -81,9 +86,22 @@ return function (instance)
     local first_xp_start, first_xp_end
 
     for idx, target in ipairs(instance.targets) do
+        -- Check cancellation before each target
+        if instance.cancel_import then
+            instance.targets[idx].status = ITargetStatus.CANCELLED
+            -- Mark all remaining SELECTED targets as cancelled too
+            for i = idx + 1, #instance.targets do
+                if instance.targets[i].status == ITargetStatus.SELECTED then
+                    instance.targets[i].status = ITargetStatus.CANCELLED
+                end
+            end
+            log("Import cancelled by user")
+            break
+        end
+
         if target.status ~= ITargetStatus.SELECTED then goto continue end
 
-        if (idx % 3 == 0) or (idx == #instance.targets) then
+        if idx % 10 == 0 then
             useRecreateStatusPopup(ctx)
             UIManager:forceRePaint()
         end

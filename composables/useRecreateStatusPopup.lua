@@ -11,6 +11,7 @@ function calculateStats(ctx)
     ctx.failed = 0
     ctx.failed_with_notes = 0
     ctx.remaining = 0
+    ctx.cancelled = 0
     for _, target in ipairs(ctx.targets) do
         if target.status == ITargetStatus.SELECTED then
             ctx.remaining = ctx.remaining + 1
@@ -28,6 +29,10 @@ function calculateStats(ctx)
         end
         if target.status == ITargetStatus.SKIPPED then
             ctx.skipped = ctx.skipped + 1
+            ctx.total = ctx.total + 1
+        end
+        if target.status == ITargetStatus.CANCELLED then
+            ctx.cancelled = ctx.cancelled + 1
             ctx.total = ctx.total + 1
         end
     end
@@ -61,6 +66,9 @@ local function recreateStatusPopup(ctx)
     end
     if ctx.skipped > 0 then
         lines[#lines + 1] = string.format("Skipped: %d", ctx.skipped)
+    end
+    if ctx.cancelled and ctx.cancelled > 0 then
+        lines[#lines + 1] = string.format("Cancelled: %d", ctx.cancelled)
     end
     if ctx.remaining > 0 then
         lines[#lines + 1] = string.format("Remaining: %d", ctx.remaining)
