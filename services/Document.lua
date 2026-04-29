@@ -36,6 +36,15 @@ end
 
 function Document:CreateHighlightFromXPointer(start_xp, end_xp, text, note_text)
     local ui = self.instance.ui
+
+    local color = G_reader_settings:readSetting("highlight_color")
+    if not color then
+        if ui.view and ui.view.highlight and ui.view.highlight.saved_color then
+            color = ui.view.highlight.saved_color
+        else
+            color = "yellow"
+        end
+    end
     
     local annotation_item = {
         text = text,
@@ -43,8 +52,8 @@ function Document:CreateHighlightFromXPointer(start_xp, end_xp, text, note_text)
         pos0 = start_xp,
         pos1 = end_xp,
         page = start_xp,  -- xPointer for EPUB rolling view
-        drawer = "highlight",
-        color = "yellow",      -- Default highlight color
+        drawer = "lighten",
+        color = color,
     }
     
     -- Add to the annotation store directly
