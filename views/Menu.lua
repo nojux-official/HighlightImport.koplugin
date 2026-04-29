@@ -15,7 +15,11 @@ function GetMenu(instance)
     {
         {
             text_func = function()
-                return instance.file_path == "" and ">Select file<" or _("Select file")
+                if instance.file_path == "" then
+                    return ">Select file<"
+                end
+                local filename = instance.file_path:match("([^/]+)$") or instance.file_path
+                return _("Select file") .. ": " .. filename
             end,
             -- keep_menu_open = true,
             callback = function()
@@ -45,6 +49,10 @@ function GetMenu(instance)
             callback = function()
                 AnnotationsView(instance)
             end
+        },
+        {
+            text = _("Settings"),
+            sub_item_table = getSettings(instance),
         },
         {
             text = _("About"),

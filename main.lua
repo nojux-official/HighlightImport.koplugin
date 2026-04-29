@@ -2,7 +2,6 @@ local Widget = require("ui/widget/widget")
 local _ = require("gettext")
 local logger = require("logger")
 local MyClipping = require("services.MyClipping")
-local Import = require("services.LocalMatching")
 
 local getMenu = require("views/Menu")
 local UIManager = require("ui/uimanager")
@@ -24,6 +23,9 @@ local HighlightImport = Widget:extend{
 
 function HighlightImport:init()
     self.parser = MyClipping:new{ ui = self.ui }
+    self.file_path = G_reader_settings:readSetting("highlight_import_file_path") or ""
+    self.last_path = G_reader_settings:readSetting("highlight_import_last_path") or ""
+    self.algorithm = G_reader_settings:readSetting("highlight_import_matching_algorithm") or "fuzzy"
 end
 
 function HighlightImport:onReaderReady()

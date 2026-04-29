@@ -34,18 +34,36 @@ function Document:GetLastProgress()
     end
 end
 
-function Document:CreateHighlightFromXPointer(start_xp, end_xp, text)
-    self.instance.ui.highlight.selected_text = {
+function Document:CreateHighlightFromXPointer(start_xp, end_xp, text, note_text)
+    local ui = self.instance.ui
+
+    local color = G_reader_settings:readSetting("highlight_color")
+    if not color then
+        if ui.view and ui.view.highlight and ui.view.highlight.saved_color then
+            color = ui.view.highlight.saved_color
+        else
+            color = "yellow"
+        end
+    end
+    
+    local annotation_item = {
         text = text,
+        note = note_text and note_text ~= "" and note_text ~= text and note_text or nil,
         pos0 = start_xp,
         pos1 = end_xp,
-        -- For rolling (EPUB/etc)
-        -- sboxes = self.document:getScreenBoxesFromPositions(start_xp, end_xp)
+        page = start_xp,  -- xPointer for EPUB rolling view
+        drawer = "lighten",
+        color = color,
     }
     
-    local index = self.instance.ui.highlight:saveHighlight(true)
+    -- Add to the annotation store directly
+    -- addItem automatically:
+    -- - Sets datetime if not provided
+    -- - Computes pageno and pageref from xPointer
+    -- - Triggers AnnotationsModified event
+    local index = ui.annotation:addItem(annotation_item)
     
-    self.instance.ui.highlight:clear()
+    ui.annotation:onSaveSettings()
     
     return index
 end
@@ -56,25 +74,7 @@ function Document:LoadNativeHighlights()
     if not self:IsDocReady() then return end
     self.instance.ui.annotation:updatePageNumbers(true)
     local clippings = self.instance.parser:parseCurrentDoc()
-    self:SerializeClippings(clippings)
-end
-
-function Document:SerializeClippings(clippings)
-    if type(clippings) ~= "table" then return end
-    local exportables = {}
-    for _title, booknotes in pairs(clippings) do
-        table.insert(exportables, booknotes)
-    end
-    if #exportables == 0 then
-        UIManager:show(InfoMessage:new{ text = _("No highlights to export") })
-        return
-    end
-    local timestamp = os.time()
-    for i, clipping in ipairs(exportables) do
-        logger.dbg("Clipping " .. i .. ": " .. tostring(clipping))
-    end
-
-    return RapidJSON.encode(exportables, { indent = true })
+    self.instance.parser:serializeClippings(clippings)
 end
 
 return Document

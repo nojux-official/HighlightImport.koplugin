@@ -3,7 +3,7 @@ local logger = require("logger")
 
 local ITargetStatus = require("interfaces.ITargetStatus")
 local ParseClippings = require("utils.ParseClippings")
-local Import = require("services.LocalMatching")
+local MatchingStrategies = require("services.MatchingStrategies")
 
 local UIManager = require("ui/uimanager")
 local ButtonTable = require("ui/widget/buttontable")
@@ -50,9 +50,11 @@ function buildItemList(targets, ctx)
 end
 
 function ImportsView(instance)
-
     instance.targets = ParseClippings(instance)
-
+    
+    local matchingStrategy = MatchingStrategies:new{ instance = instance }
+    local strategyName = G_reader_settings:readSetting(("highlight_import_matching_algorithm"), "fuzzy")
+    matchingStrategy:selectByName(strategyName)
 
     local function recreate(page)
         if not page then page = 1 end
@@ -68,13 +70,13 @@ function ImportsView(instance)
                     useCloseButton(ctx)
                     
                     UIManager:nextTick(function()
-                        Import(instance)
+                        matchingStrategy:execute()
                     end)
                 end},
                 {text="Import selected", callback=function()
                     useCloseButton(ctx);
                     UIManager:nextTick(function()
-                        Import(instance)
+                        matchingStrategy:execute()
                     end)
                   end},
                 {text="Toggle browsing", callback=function() useCloseButton(ctx); AnnotationsView(instance) end},

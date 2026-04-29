@@ -1,55 +1,74 @@
 local _ = require("gettext")
-
-local getAISettings = require("views/settings/SettingsAI")
-local getRunnerSettings = require("views/settings/SettingsRunner")
-local getSyncSettings = require("views/settings/SettingsSync")
+local logger = require("logger")
+local UIManager = require("ui/uimanager")
+local RadioDialog = require("components.RadioDialog")
 
 function GetSettings(instance)
     return {
         {
-            text = _("Preserve notes: Yes"),
+            text = _("Matching algorithm"),
+            keep_open = true,
             callback = function()
-                Alert("Not implemented yet.")
+                local items =
+                {
+                    {name = "Legacy (exact)", provider = "exact_legacy", checked = false}, 
+                    {name = "Adaptive search", provider = "adaptive", checked = false},
+                }
+                local strategyName = G_reader_settings:readSetting(("highlight_import_matching_algorithm"), "fuzzy")
+
+                for _, item in pairs(items) do
+                    if item.provider == strategyName then
+                        item.checked = true
+                    end
+                end
+
+
+                local radio_buttons = {}  
+                for _, item in pairs(items) do  
+                    table.insert(radio_buttons, {{  
+                        text = item.name,  
+                        provider = item.provider,  
+                        checked = item.checked,
+                    }})  
+                end
+
+                local callback = function(ctx)
+                    logger.info("Selected matching algorithm: " .. ctx.provider)
+                    G_reader_settings:saveSetting("highlight_import_matching_algorithm", ctx.provider)
+                    
+                end
+
+                local radioDialog = RadioDialog("Select matching algorithm"
+                    , "Choose the algorithm to use for matching highlights"
+                    , radio_buttons
+                    , callback
+                    , instance)
+
+                UIManager:show(radioDialog)
                 return true
             end,
         },
         {
-            text = _("Match threshold: 90%"),
-            callback = function()
-                Alert("Not implemented yet.")
-                return true
+            text = _("On fail: save unmatched to file"),
+            checked_func = function()
+                return G_reader_settings:isTrue("highlight_import_save_unmatched_file")
             end,
+            callback = function()
+                G_reader_settings:saveSetting("highlight_import_save_unmatched_file",
+                    not G_reader_settings:isTrue("highlight_import_save_unmatched_file"))
+            end,
+            keep_menu_open = true,
         },
         {
-            text = _("AI assisted matching: Disabled"),
-            sub_item_table = getAISettings(instance),
-            callback = function()
-                Alert("Not implemented yet.")
-                return true
+            text = _("On fail: add note in book"),
+            checked_func = function()
+                return G_reader_settings:isTrue("highlight_import_note_in_book")
             end,
-        },
-        {
-            text = _("External runner: Enabled"),
-            sub_item_table = getRunnerSettings(instance),
             callback = function()
-                Alert("Not implemented yet.")
-                return true
+                G_reader_settings:saveSetting("highlight_import_note_in_book",
+                    not G_reader_settings:isTrue("highlight_import_note_in_book"))
             end,
-        },
-        {
-            text = _("Sync settings: Disabled"),
-            sub_item_table = getSyncSettings(instance),
-            callback = function()
-                Alert("Not implemented yet.")
-                return true
-            end,
-        },
-        {
-            text = _("Clear cache"),
-            callback = function()
-                Alert("Not implemented yet.")
-                return true
-            end,
+            keep_menu_open = true,
         },
     }
 end
