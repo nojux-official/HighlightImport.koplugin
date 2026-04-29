@@ -1,3 +1,6 @@
+-- This file contains modified code from KOReader, which is licensed under AGPL-3.0.  
+-- The original copyright notices and license terms apply.  
+
 local BookList = require("ui/widget/booklist")
 local DocumentRegistry = require("document/documentregistry")
 local md5 = require("ffi/sha2").md5
@@ -142,6 +145,7 @@ function MyClipping:parseOldFormat(content, clippings, book_filter)
     -- Your Highlight on Page 123 | Added on Monday, April 21, 2014 10:08:07 PM
     --
     -- This is a sample highlight.
+    -- Multi-line text also supported
     -- ==========
     local index = 1
     local title, author, info, text, skip_book
@@ -161,12 +165,17 @@ function MyClipping:parseOldFormat(content, clippings, book_filter)
             if index == 2 then
                 info = self:getInfo(line)
                 -- index == 3 is a blank line, skipped
-            elseif index == 4 then
-                text = self:getText(line)
+            elseif index >= 4 and line ~= "==========" then
+                -- Accumulate all text lines until separator
+                if text then
+                    text = text .. "\n" .. self:getText(line)
+                else
+                    text = self:getText(line)
+                end
             end
         end
         if line == "==========" then
-            if index == 5 and not skip_book then
+            if index >= 5 and not skip_book and text then
                 local clipping = {
                     page = info.page or info.location or _("N/A"),
                     sort = info.sort,
@@ -178,8 +187,20 @@ function MyClipping:parseOldFormat(content, clippings, book_filter)
                 table.insert(clippings[title], { clipping })
             end
             index = 0
+            text = nil
         end
         index = index + 1
+    end
+    
+    -- Handle the last clipping if it doesn't have a trailing separator
+    if index >= 5 and not skip_book and title and info and text then
+        local clipping = {
+            page = info.page or info.location or _("N/A"),
+            sort = info.sort,
+            time = info.time,
+            text = text,
+        }
+        table.insert(clippings[title], { clipping })
     end
 end
 
@@ -296,7 +317,7 @@ function MyClipping:getInfo(line)
     -- find entry type and location
     for sort, words in pairs(keywords) do
         for _, word in ipairs(words) do
-            if part1 and part1:find(word) then
+            if part1 and part1:lower():find(word:lower()) then
                 info.sort = sort
                 info.location = part1:match("(%d+-?%d+)")
                 break
