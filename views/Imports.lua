@@ -53,7 +53,7 @@ function ImportsView(instance)
     instance.targets = ParseClippings(instance)
     
     local matchingStrategy = MatchingStrategies:new{ instance = instance }
-    local strategyName = G_reader_settings:readSetting(("highlight_import_matching_algorithm"), "fuzzy")
+    local strategyName = G_reader_settings:readSetting(("highlight_import_matching_algorithm"), "adaptive")
     matchingStrategy:selectByName(strategyName)
 
     local function recreate(page)

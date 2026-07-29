@@ -25,7 +25,7 @@ function HighlightImport:init()
     self.parser = MyClipping:new{ ui = self.ui }
     self.file_path = G_reader_settings:readSetting("highlight_import_file_path") or ""
     self.last_path = G_reader_settings:readSetting("highlight_import_last_path") or ""
-    self.algorithm = G_reader_settings:readSetting("highlight_import_matching_algorithm") or "fuzzy"
+    self.algorithm = G_reader_settings:readSetting("highlight_import_matching_algorithm") or "adaptive"
 end
 
 function HighlightImport:onReaderReady()

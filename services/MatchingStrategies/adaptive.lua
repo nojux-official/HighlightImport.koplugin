@@ -49,6 +49,23 @@ return function (instance)
     log(string.format("Starting import. Targets: %d, Existing highlights: %d",
         #instance.targets, n_existing))
 
+    -- Truncate a string safely at a UTF-8 character boundary.
+    -- Lua's string.sub works on bytes, which can split multi-byte characters
+    -- (e.g. "á" = 2 bytes, "—" = 3 bytes), producing invalid UTF-8 that the
+    -- search engine silently fails to match.
+    local function utf8_sub(s, max_bytes)
+        if #s <= max_bytes then return s end
+        local i = max_bytes
+        -- Walk back until we are at the start of a UTF-8 character.
+        -- Continuation bytes have the form 10xxxxxx (0x80–0xBF).
+        while i > 0 and s:byte(i) >= 0x80 and s:byte(i) <= 0xBF do
+            i = i - 1
+        end
+        -- Also skip the leading byte of a multi-byte sequence if it would be orphaned.
+        if i > 0 and s:byte(i) >= 0x80 then i = i - 1 end
+        return s:sub(1, i)
+    end
+
     -- Normalize curly/smart typography to ASCII equivalents.
     -- Used as a fallback when the exact text fails to match, which happens when
     -- the Kindle edition used smart quotes/dashes but the EPUB uses plain ASCII.
@@ -62,6 +79,22 @@ return function (instance)
         s = s:gsub("\xe2\x80\xa6", "...") -- U+2026 ellipsis
         s = s:gsub("%s%s+", " ")          -- collapse double-spaces left by "word – word" → "word  -  word"
         return s
+    end
+
+    -- Remove em/en-dashes and surrounding spaces used for dialogue attribution.
+    -- Portuguese Kindle books use " — Palavra" (space + em-dash + space) at the
+    -- start of dialogue lines. Some EPUB editions represent the same text differently.
+    -- This produces a version with dashes stripped so the search can find the
+    -- underlying prose without the typographic dash character.
+    local function strip_dashes(s)
+        -- Remove leading "— " or "– " patterns (dialogue openers)
+        s = s:gsub("^\xe2\x80\x94%s*", "")  -- leading em-dash + optional space
+        s = s:gsub("^\xe2\x80\x93%s*", "")  -- leading en-dash + optional space
+        -- Remove inline " — " and " – " patterns
+        s = s:gsub("%s*\xe2\x80\x94%s*", " ")
+        s = s:gsub("%s*\xe2\x80\x93%s*", " ")
+        s = s:gsub("%s+", " ")
+        return s:match("^%s*(.-)%s*$") or s
     end
 
     instance.cancel_import = false
@@ -118,8 +151,10 @@ return function (instance)
             instance.ui.paging:gotoPage(tonumber(target.page))
         end
 
-        -- Truncate very long highlights to avoid search engine memory pressure
-        local query = #target.annotation > 150 and target.annotation:sub(1, 150) or target.annotation
+        -- Truncate very long highlights to avoid search engine memory pressure.
+        -- Use utf8_sub to avoid splitting multi-byte characters (á, ã, ê, —, etc.)
+        -- which would produce invalid UTF-8 that the search engine silently rejects.
+        local query = utf8_sub(target.annotation, 150)
         log(string.format("[SEARCH p.%s] %s", tostring(target.page), query))
         local res = search:searchFromCurrent(query, 0, false, true)
 
@@ -139,9 +174,10 @@ return function (instance)
         if not res or #res == 0 then
             local base = query_norm  -- already normalized; same as query if no special chars
             for _, len in ipairs({ 80, 50 }) do
-                if #base > len then
+                local prefix = utf8_sub(base, len)
+                if #prefix < #base then
                     log(string.format("[RETRY prefix-%d]", len))
-                    res = search:searchFromCurrent(base:sub(1, len), 0, false, true)
+                    res = search:searchFromCurrent(prefix, 0, false, true)
                     if res and #res > 0 then break end
                 end
             end
@@ -156,11 +192,182 @@ return function (instance)
             log("[RETRY backward]")
             local base = query_norm
             res = search:searchFromCurrent(base, 1, false, true)
-            if (not res or #res == 0) and #base > 80 then
-                res = search:searchFromCurrent(base:sub(1, 80), 1, false, true)
+            if not res or #res == 0 then
+                local p80 = utf8_sub(base, 80)
+                if #p80 < #base then
+                    res = search:searchFromCurrent(p80, 1, false, true)
+                end
             end
-            if (not res or #res == 0) and #base > 50 then
-                res = search:searchFromCurrent(base:sub(1, 50), 1, false, true)
+            if not res or #res == 0 then
+                local p50 = utf8_sub(base, 50)
+                if #p50 < #base then
+                    res = search:searchFromCurrent(p50, 1, false, true)
+                end
+            end
+        end
+
+        -- Fallback: strip em/en-dashes and retry.
+        -- Dialogue lines in Portuguese Kindle books often start with "— Palavra"
+        -- (U+2014 + space). Some EPUB editions omit the dash entirely or use a
+        -- different encoding, causing all dash-containing highlights to fail.
+        if not res or #res == 0 then
+            local stripped = strip_dashes(query_norm)
+            if stripped ~= query_norm and #stripped >= 10 then
+                log("[RETRY strip-dashes]")
+                res = search:searchFromCurrent(stripped, 0, false, true)
+                if not res or #res == 0 then
+                    local p80 = utf8_sub(stripped, 80)
+                    if #p80 < #stripped then res = search:searchFromCurrent(p80, 0, false, true) end
+                end
+                if not res or #res == 0 then
+                    local p50 = utf8_sub(stripped, 50)
+                    if #p50 < #stripped then res = search:searchFromCurrent(p50, 0, false, true) end
+                end
+                -- Also try backward
+                if not res or #res == 0 then
+                    res = search:searchFromCurrent(stripped, 1, false, true)
+                end
+            end
+        end
+
+        -- Fallback: try the text segment at/after the first em/en-dash.
+        -- Kindle clippings sometimes capture text from the end of one paragraph
+        -- joined to the start of the next (e.g. "claro. — Então às cinco").
+        -- The EPUB has these as separate paragraphs: the second paragraph often
+        -- STARTS with the dash ("— Então às cinco"), so we must search for the
+        -- dash-inclusive version AND the dash-stripped version.
+        if not res or #res == 0 then
+            local raw_dash_pos = query:find("\xe2\x80\x94", 1, true)
+                              or query:find("\xe2\x80\x93", 1, true)
+            if raw_dash_pos then
+                -- 1) Include the dash: "— Então às cinco, e de sobrecasaca."
+                --    This matches EPUBs where the paragraph starts with the dash.
+                local with_dash = query:sub(raw_dash_pos):match("^%s*(.-)%s*$")
+                -- 2) Exclude the dash (skip the 3-byte sequence + space)
+                local after_raw = query:sub(raw_dash_pos + 3):match("^%s*(.-)%s*$")
+                for _, probe in ipairs({ with_dash, after_raw }) do
+                    if probe and #probe >= 10 and (not res or #res == 0) then
+                        log(string.format("[RETRY around-dash] %s", utf8_sub(probe, 60)))
+                        res = search:searchFromCurrent(probe, 0, false, true)
+                        if not res or #res == 0 then
+                            res = search:searchFromCurrent(probe, 1, false, true)
+                        end
+                        -- also try shorter prefix of this probe
+                        if not res or #res == 0 then
+                            local p80 = utf8_sub(probe, 80)
+                            if #p80 < #probe then
+                                res = search:searchFromCurrent(p80, 0, false, true)
+                                if not res or #res == 0 then
+                                    res = search:searchFromCurrent(p80, 1, false, true)
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+            -- Also try via the normalized form (dash replaced with " - ")
+            if not res or #res == 0 then
+                local dash_start = query_norm:find(" - ", 1, true)
+                if dash_start then
+                    -- normalized "- " prefix version
+                    local with_dash_norm = query_norm:sub(dash_start + 1):match("^%s*(.-)%s*$")
+                    local after_dash_norm = query_norm:sub(dash_start + 3):match("^%s*(.-)%s*$")
+                    for _, probe in ipairs({ with_dash_norm, after_dash_norm }) do
+                        if probe and #probe >= 10 and (not res or #res == 0) then
+                            log(string.format("[RETRY norm-dash] %s", utf8_sub(probe, 60)))
+                            res = search:searchFromCurrent(probe, 0, false, true)
+                            if not res or #res == 0 then
+                                res = search:searchFromCurrent(probe, 1, false, true)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+        -- Fallback: split annotation by newline and try each line independently.
+        -- The Kindle stores multi-paragraph selections joined with literal \n characters.
+        -- KOReader's search engine works within individual EPUB paragraph elements, so
+        -- a query containing \n will NEVER match across paragraphs.
+        -- Strategy: try each non-empty line as a standalone query (forward + backward).
+        -- This is the primary fix for cross-paragraph highlights like:
+        --   "claro.\n— Então às cinco, e de sobrecasaca."
+        -- where "claro." is one paragraph and "— Então às cinco..." is another.
+        if (not res or #res == 0) and target.annotation:find("\n", 1, true) then
+            local lines_list = {}
+            for ln in (target.annotation .. "\n"):gmatch("([^\n]*)\n") do
+                ln = ln:match("^%s*(.-)%s*$") or ""
+                if #ln >= 15 then
+                    lines_list[#lines_list + 1] = ln
+                end
+            end
+            for _, ln in ipairs(lines_list) do
+                if not res or #res == 0 then
+                    local ln_norm = normalize_typography(ln)
+                    log(string.format("[RETRY newline-split] %s", utf8_sub(ln_norm, 60)))
+                    res = search:searchFromCurrent(ln_norm, 0, false, true)
+                    if not res or #res == 0 then
+                        res = search:searchFromCurrent(ln_norm, 1, false, true)
+                    end
+                    -- also try shorter prefixes of this line
+                    if not res or #res == 0 then
+                        local p80 = utf8_sub(ln_norm, 80)
+                        if #p80 < #ln_norm then
+                            res = search:searchFromCurrent(p80, 0, false, true)
+                            if not res or #res == 0 then
+                                res = search:searchFromCurrent(p80, 1, false, true)
+                            end
+                        end
+                    end
+                    if not res or #res == 0 then
+                        local p50 = utf8_sub(ln_norm, 50)
+                        if #p50 < #ln_norm then
+                            res = search:searchFromCurrent(p50, 0, false, true)
+                            if not res or #res == 0 then
+                                res = search:searchFromCurrent(p50, 1, false, true)
+                            end
+                        end
+                    end
+                    -- also try strip-dashes variant of this line
+                    if not res or #res == 0 then
+                        local ln_stripped = strip_dashes(ln_norm)
+                        if ln_stripped ~= ln_norm and #ln_stripped >= 10 then
+                            res = search:searchFromCurrent(ln_stripped, 0, false, true)
+                            if not res or #res == 0 then
+                                res = search:searchFromCurrent(ln_stripped, 1, false, true)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+        -- Fallback: short prefix (first ~40 bytes) to handle cross-paragraph clippings.
+        -- The Kindle records multi-paragraph selections as a single joined string.
+        -- The KOReader search engine operates within individual EPUB paragraph elements,
+        -- so a string that spans two paragraphs will NEVER match as a whole.
+        -- Searching for only the first portion (which lives entirely in the first paragraph)
+        -- works around this fundamental limitation.
+        -- This fires regardless of whether dashes are involved.
+        if not res or #res == 0 then
+            -- First try: everything before the first sentence-ending punctuation
+            -- followed by a space (captures "claro." from "claro. — Então...").
+            local first_sentence = query_norm:match("^(.+[%.!%?])[%s%-]") or
+                                   query_norm:match("^(.+[%.!%?])$")
+            if first_sentence then
+                first_sentence = first_sentence:match("^%s*(.-)%s*$") or first_sentence
+            end
+            -- Fallback: take the first 40 UTF-8-safe bytes as the prefix
+            local short_prefix = utf8_sub(query_norm, 40)
+            -- Use the shorter of the two as long as it's meaningful (≥ 10 chars)
+            for _, probe in ipairs({ first_sentence, short_prefix }) do
+                if probe and #probe >= 10 and (not res or #res == 0) then
+                    log(string.format("[RETRY short-prefix] %s", probe))
+                    res = search:searchFromCurrent(probe, 0, false, true)
+                    if not res or #res == 0 then
+                        res = search:searchFromCurrent(probe, 1, false, true)
+                    end
+                end
             end
         end
 
@@ -176,11 +383,13 @@ return function (instance)
                 if inner and #inner >= 20 then
                     log("[RETRY no-outer-quote]")
                     res = search:searchFromCurrent(inner, 0, false, true)
-                    if (not res or #res == 0) and #inner > 80 then
-                        res = search:searchFromCurrent(inner:sub(1, 80), 0, false, true)
+                    if not res or #res == 0 then
+                        local p80 = utf8_sub(inner, 80)
+                        if #p80 < #inner then res = search:searchFromCurrent(p80, 0, false, true) end
                     end
-                    if (not res or #res == 0) and #inner > 50 then
-                        res = search:searchFromCurrent(inner:sub(1, 50), 0, false, true)
+                    if not res or #res == 0 then
+                        local p50 = utf8_sub(inner, 50)
+                        if #p50 < #inner then res = search:searchFromCurrent(p50, 0, false, true) end
                     end
                 end
             end

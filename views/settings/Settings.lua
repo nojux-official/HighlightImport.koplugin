@@ -14,7 +14,7 @@ function GetSettings(instance)
                     {name = "Legacy (exact)", provider = "exact_legacy", checked = false}, 
                     {name = "Adaptive search", provider = "adaptive", checked = false},
                 }
-                local strategyName = G_reader_settings:readSetting(("highlight_import_matching_algorithm"), "fuzzy")
+                local strategyName = G_reader_settings:readSetting(("highlight_import_matching_algorithm"), "adaptive")
 
                 for _, item in pairs(items) do
                     if item.provider == strategyName then

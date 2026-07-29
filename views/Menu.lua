@@ -5,6 +5,7 @@ local AnnotationsView = require("views.annotations.Annotations")
 local FailedTargetsView = require("views.FailedTargets")
 local getSettings = require("views.settings.Settings")
 local fileSelector = require("components.fileSelector")
+local FilePick = require("views.FilePick")
 local Alert = require("components.Alert")
 local Popup = require("components.Popup")
 local useRecreateStatusPopup = require("composables/useRecreateStatusPopup")
@@ -24,6 +25,22 @@ function GetMenu(instance)
             -- keep_menu_open = true,
             callback = function()
                 fileSelector(instance)
+            end,
+        },
+        {
+            text_func = function()
+                if instance.file_path == "" then
+                    return _("Select source book")
+                end
+                if instance.manual_book then
+                    local short = instance.manual_book:sub(1, 30)
+                    if #instance.manual_book > 30 then short = short .. "…" end
+                    return _("Source book") .. ": " .. short
+                end
+                return _("Select source book") .. " (" .. _("auto") .. ")"
+            end,
+            callback = function()
+                FilePick(instance)
             end,
         },
         {
