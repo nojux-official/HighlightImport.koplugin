@@ -36,9 +36,46 @@ end
 --      }
 -- }
 
--- Normalize a title for matching: lowercase, strip trailing (...) and " - ..."
+-- Map UTF-8 multi-byte sequences for accented Latin characters to their ASCII base.
+-- Lua's string.lower/upper are ASCII-only, so accented chars must be stripped manually
+-- to allow title matching across sources with different diacritic conventions
+-- (e.g. Kindle "Kariênina" vs filename "Karienina").
+local accent_map = {
+    -- 2-byte sequences (U+00C0–U+00FF range)
+    ["\xc3\x80"] = "a", ["\xc3\x81"] = "a", ["\xc3\x82"] = "a", ["\xc3\x83"] = "a",
+    ["\xc3\x84"] = "a", ["\xc3\x85"] = "a", ["\xc3\x86"] = "ae",
+    ["\xc3\x87"] = "c",
+    ["\xc3\x88"] = "e", ["\xc3\x89"] = "e", ["\xc3\x8a"] = "e", ["\xc3\x8b"] = "e",
+    ["\xc3\x8c"] = "i", ["\xc3\x8d"] = "i", ["\xc3\x8e"] = "i", ["\xc3\x8f"] = "i",
+    ["\xc3\x91"] = "n",
+    ["\xc3\x92"] = "o", ["\xc3\x93"] = "o", ["\xc3\x94"] = "o", ["\xc3\x95"] = "o",
+    ["\xc3\x96"] = "o",
+    ["\xc3\x99"] = "u", ["\xc3\x9a"] = "u", ["\xc3\x9b"] = "u", ["\xc3\x9c"] = "u",
+    ["\xc3\x9d"] = "y",
+    ["\xc3\xa0"] = "a", ["\xc3\xa1"] = "a", ["\xc3\xa2"] = "a", ["\xc3\xa3"] = "a",
+    ["\xc3\xa4"] = "a", ["\xc3\xa5"] = "a", ["\xc3\xa6"] = "ae",
+    ["\xc3\xa7"] = "c",
+    ["\xc3\xa8"] = "e", ["\xc3\xa9"] = "e", ["\xc3\xaa"] = "e", ["\xc3\xab"] = "e",
+    ["\xc3\xac"] = "i", ["\xc3\xad"] = "i", ["\xc3\xae"] = "i", ["\xc3\xaf"] = "i",
+    ["\xc3\xb1"] = "n",
+    ["\xc3\xb2"] = "o", ["\xc3\xb3"] = "o", ["\xc3\xb4"] = "o", ["\xc3\xb5"] = "o",
+    ["\xc3\xb6"] = "o",
+    ["\xc3\xb9"] = "u", ["\xc3\xba"] = "u", ["\xc3\xbb"] = "u", ["\xc3\xbc"] = "u",
+    ["\xc3\xbd"] = "y", ["\xc3\xbf"] = "y",
+}
+
+local function normalize_accents(s)
+    for pattern, replacement in pairs(accent_map) do
+        s = s:gsub(pattern, replacement)
+    end
+    return s
+end
+
+-- Normalize a title for matching: lowercase, strip accents, strip trailing (...) and " - ..."
 local function bare(s)
     s = (s or ""):lower():match("^%s*(.-)%s*$")
+    -- Strip diacritics so "Kariênina" == "Karienina", "Tolstói" == "tolstoi", etc.
+    s = normalize_accents(s)
     s = s:gsub("%s*%b()%s*$", "")
     s = s:gsub("%s*%-%s*.+$", "")
     s = s:match("^%s*(.-)%s*$")
@@ -244,14 +281,25 @@ local keywords = {
     ["highlight"] = {
         "Highlight",
         "标注",
+        -- Portuguese (Kindle Brasil)
+        "destaque",
+        "Destaque",
     },
     ["note"] = {
         "Note",
         "笔记",
+        -- Portuguese
+        "nota",
+        "Nota",
+        "anotação",
+        "Anotação",
     },
     ["bookmark"] = {
         "Bookmark",
         "书签",
+        -- Portuguese
+        "marcador",
+        "Marcador",
     },
 }
 
@@ -267,7 +315,20 @@ local months = {
     ["Sep"] = 9,
     ["Oct"] = 10,
     ["Nov"] = 11,
-    ["Dec"] = 12
+    ["Dec"] = 12,
+    -- Portuguese month names (Kindle Brasil)
+    ["janeiro"]   = 1,
+    ["fevereiro"] = 2,
+    ["março"]     = 3,
+    ["abril"]     = 4,
+    ["maio"]      = 5,
+    ["junho"]     = 6,
+    ["julho"]     = 7,
+    ["agosto"]    = 8,
+    ["setembro"]  = 9,
+    ["outubro"]   = 10,
+    ["novembro"]  = 11,
+    ["dezembro"]  = 12,
 }
 
 local pms = {
